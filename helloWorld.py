@@ -1,1 +1,2 @@
-print('Hola Mundo')
+print('Hola mundo')
+print('Hola, Hinara')

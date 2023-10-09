@@ -1,69 +1,102 @@
 # Importar librerías
+import requests
 import streamlit as st
-from pages import Entrar, Sobre_nosotros, Registrarse
+from dotenv import dotenv_values
+from pages import Sobre_nosotros, Registrarse
 
-# Logo en la esquina superior derecha
-st.markdown(
-    """
-    <style>
-    .logo-container {
-        position: fixed;
-        top: 50px;
-        right: 10px;
-    }
-    </style>
-    <div class="logo-container">
-        <img src="https://i.ibb.co/CWhPGm1/logo.png" alt="logo"style="max-width: 150px; height: auto;">
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+config = dotenv_values(".env")
+# Inicializar el estado de la sesión para el paginado
+if 'page' not in st.session_state:
+    st.session_state.page = 1
 
-# Lista de libros con datos de prueba (título, autor y URL de la imagen)
-libros = [
-    {
-        "titulo": "El Alquimista",
-        "autor": "Paulo Coelho",
-        "imagen": "https://planetadelibrosco2.cdnstatics.com/usuaris/libros/fotos/384/original/portada_el-alquimista_paulo-coelho_202306160135.jpg"
-    },
-    {
-        "titulo": "No sé cómo mostrar dónde me duele",
-        "autor": "Amalia Andrade",
-        "imagen": "https://planetadelibrosco2.cdnstatics.com/usuaris/libros/fotos/386/original/portada_no-se-como-mostrar-donde-me-duele_amalia-andrade_202307311626.png"
-    },
-    {
-        "titulo": "1984",
-        "autor": "George Orwell",
-        "imagen": "https://planetadelibrosco2.cdnstatics.com/usuaris/libros/fotos/339/original/338485_portada_1984_george-orwell_202104151338.jpg"
-    },
-    {
-        "titulo": "Don Quijote de la mancha",
-        "autor": "Miguel de Cervantes",
-        "imagen": "https://planetadelibrosco2.cdnstatics.com/usuaris/libros/fotos/161/original/160444_48282_1_DonQujotedelaMancha.jpg"
-    },
-]
+print(st.session_state)
+pagination = {
+    'LIMIT': 2,
+    'page': st.session_state.page + 1 if 'next_page' in st
+    .session_state and st.session_state.next_page else
+    st.session_state.page - 1 if 'prev_page' in st
+    .session_state and st.session_state.prev_page else
+    st.session_state.page
+}
+st.session_state.page = pagination['page']
+try:
+    value = requests.get(config['BACK_URL']).json()['success']
+except requests.exceptions.RequestException:
+    value = False
 
+if value:
+    st.set_page_config(
+        page_title="LitWave",
+        page_icon="https://i.ibb.co/CWhPGm1/logo.png",
+        initial_sidebar_state="collapsed",
+    )
+    # Logo en la esquina superior derecha
+    st.markdown(
+        """
+        <style>
+        .logo-container {
+            position: fixed;
+            top: 46px;
+            right: 10px;
+        }
+        </style>
+        <div class="logo-container">
+            <img src="https://i.ibb.co/CWhPGm1/logo.png" 
+            alt="logo"style="max-width: 150px; height: auto;">
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-st.header("Explora y descubre nuevos autores y libros")
+    # Lista de libros con datos de prueba (título, autor y URL de la imagen)
 
-# Barra de búsqueda
-busqueda = st.text_input("Buscar libro")
+    st.header("Explora y descubre nuevos autores y libros")
+    # Barra de búsqueda
+    busqueda = st.text_input("Buscar libro", on_change=lambda: st.rerun())
+    response = requests.get(f"{config['BACK_URL']}/books",
+                            {
+                                'search_param': busqueda,
+                                'limit': pagination['LIMIT'],
+                                'page': pagination['page']
+                            }).json()
+    libros = response['data']
+    metadata = response['metadata']
+    # Filtra los libros según el término de búsqueda
+    # Muestra los resultados en dos columnas
+    columnas = st.columns(2)
+    for i, resultado in enumerate(libros):
+        with columnas[i % 2]:  # Alternar entre las dos columnas
+            st.image(resultado["imagen"], caption=resultado["titulo"],
+                     use_column_width=True)
+            st.write("**Título:**", resultado["titulo"])
+            st.write("**Autor:**", resultado["autor"])
 
-# Filtra los libros según el término de búsqueda
-resultados = []
-for libro in libros:
-    if busqueda.lower() in libro["titulo"].lower() or busqueda.lower() in libro["autor"].lower():
-        resultados.append(libro)
+    # Paginado
+    if metadata['totalPages'] > 1:
+        st.write(f"Mostrando página {pagination['page']} de"
+                 f" {int(metadata['totalPages'])}")
+        if pagination['page'] > 1:
+            st.button("Anterior", key="prev_page")
 
-# Muestra los resultados en dos columnas
-columnas = st.columns(2)
-for i, resultado in enumerate(resultados):
-    with columnas[i % 2]:  # Alternar entre las dos columnas
-        st.image(resultado["imagen"], caption=resultado["titulo"], use_column_width=True)
-        st.write("**Título:**", resultado["titulo"])
-        st.write("**Autor:**", resultado["autor"])
-st.markdown("---")
+        if pagination['page'] < metadata['totalPages']:
+            st.button("Siguiente", key="next_page")
+    st.markdown("---")
 
-# Mensaje si no hay resultados
-if not resultados:
-    st.info("No se encontraron resultados para la búsqueda.")
+    # Mensaje si no hay resultados
+    if not libros:
+        st.info("No se encontraron resultados para la búsqueda.")
+else:
+    # Configurar la página para ocupar toda la pantalla
+    st.set_page_config(
+        page_title="Aplicación no disponible",
+        page_icon=":x:",
+        layout="wide",
+        initial_sidebar_state="collapsed",
+    )
+    # Crear la vista de la página
+    st.write("""
+                # Aplicación no disponible en este momento.
+                Lo sentimos, pero la aplicación no está disponible en este 
+                momento.
+                Por favor, inténtelo de nuevo más tarde.
+            """)

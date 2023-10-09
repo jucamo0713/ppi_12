@@ -3,7 +3,10 @@ LitWave es más que una plataforma de lectura; es una comunidad apasionada de am
 ## Objetivo
 El objetivo principal del proyecto "LitWave" es ser una plataforma en línea que reúna a amantes de la lectura de todo el mundo para cumplir varios propósitos relacionados con esta pasión.
 ## Participantes
-Hinara Pastora Sánchez Mata.<br>
-Juan Camilo Montoya Mejía.
+Hinara Pastora Sánchez Mata. Correo: hisanchezm@unal.edu.co<br>
+Juan Camilo Montoya Mejía. Correo: jumontoyame@unal.edu.co
+## Urls de despliegue
+[Front](https://litwave.streamlit.app/)
+[Back](https://litwave-back.onrender.com/docs)
 ## Licencia
 El código y la información almacenada en este repositorio es de modificación y distribución gratuita bajo Licencia Pública General de GNU (GPL) versión 3. Puede consultar los alcances de esta licencia y las otras licencias disponibles para software en: [Lista de licencias con comentarios](https://www.gnu.org/licenses/license-list.es.html)

@@ -1,9 +1,6 @@
 import streamlit as st
 from datetime import datetime
 
-st.set_page_config(page_title='1234567890', page_icon=None,
-                   layout="centered", initial_sidebar_state="auto",
-                   menu_items=None)
 
 # Logo en la esquina superior derecha
 st.markdown(

@@ -9,7 +9,6 @@ config = dotenv_values(".env")
 if 'page' not in st.session_state:
     st.session_state.page = 1
 
-print(st.session_state)
 pagination = {
     'LIMIT': 2,
     'page': st.session_state.page + 1 if 'next_page' in st
@@ -19,8 +18,10 @@ pagination = {
     st.session_state.page
 }
 st.session_state.page = pagination['page']
+url = st.secrets['BACK_URL'] if st.secrets and 'BACK_URL' in st.secrets else\
+    config['BACK_URL']
 try:
-    value = requests.get(config['BACK_URL']).json()['success']
+    value = requests.get(url).json()['success']
 except requests.exceptions.RequestException:
     value = False
 
@@ -53,7 +54,7 @@ if value:
     st.header("Explora y descubre nuevos autores y libros")
     # Barra de búsqueda
     busqueda = st.text_input("Buscar libro", on_change=lambda: st.rerun())
-    response = requests.get(f"{config['BACK_URL']}/books",
+    response = requests.get(f"{url}/books",
                             {
                                 'search_param': busqueda,
                                 'limit': pagination['LIMIT'],

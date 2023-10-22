@@ -1,5 +1,6 @@
-from back.book.SearchAllBooks import SearchAllBooks
+from .SearchAllBooks import SEARCH_ALL_BOOKS
 
+# Definición de las rutas y controladores
 BookRoutes = [{'path': '/books',
                'tag': 'Books',
-               'instance': SearchAllBooks}]
+               'instance': SEARCH_ALL_BOOKS}]

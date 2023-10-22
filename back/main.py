@@ -1,21 +1,31 @@
-import numpy as np
 from fastapi import FastAPI
 from .book.BookRoutes import BookRoutes
-from .db.connection import Connection
+from .auth.AuthRoutes import AuthRoutes
+from .db.Connection import Connection
+from .user.UserRoutes import USER_ROUTES
 
+# Crear una instancia de FastAPI
 app = FastAPI()
 
+# Importar los módulos y configuraciones necesarios
 modules = [Connection]
 
-for i in modules:
-    i(app)
+# Inicializar los módulos de la aplicación
+for module in modules:
+    module(app)
 
 
+# Ruta raíz de la aplicación
 @app.get("/")
 async def root():
     return {"success": True}
 
 
-routers = np.array(BookRoutes).flat
-for r in routers:
-    app.include_router(r['instance'], tags=[r['tag']], prefix=r['path'])
+# Obtener las rutas y controladores
+routers = [*BookRoutes, *AuthRoutes, *USER_ROUTES]
+
+# Agregar las rutas y controladores a la aplicación
+for router in routers:
+    print(router)
+    app.include_router(router['instance'], tags=[router['tag']],
+                       prefix=router['path'])

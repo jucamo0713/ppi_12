@@ -53,7 +53,7 @@ if value:
 
     st.header("Explora y descubre nuevos autores y libros")
     # Barra de búsqueda
-    busqueda = st.text_input("Buscar libro", on_change=lambda: st.rerun())
+    busqueda = st.text_input("Buscar libro")
     response = requests.get(f"{url}/books",
                             {
                                 'search_param': busqueda,
@@ -67,10 +67,10 @@ if value:
     columnas = st.columns(2)
     for i, resultado in enumerate(libros):
         with columnas[i % 2]:  # Alternar entre las dos columnas
-            st.image(resultado["imagen"], caption=resultado["titulo"],
+            st.image(resultado["image"], caption=resultado["title"],
                      use_column_width=True)
-            st.write("**Título:**", resultado["titulo"])
-            st.write("**Autor:**", resultado["autor"])
+            st.write("**Título:**", resultado["title"])
+            st.write("**Autor:**", resultado["author"])
 
     # Paginado
     if metadata['totalPages'] > 1:

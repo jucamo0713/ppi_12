@@ -1,6 +1,13 @@
+import requests
 import streamlit as st
 from datetime import datetime
 
+from dotenv import dotenv_values
+
+config = dotenv_values(".env")
+
+url = st.secrets['BACK_URL'] if st.secrets and 'BACK_URL' in st.secrets else \
+    config['BACK_URL']
 
 # Logo en la esquina superior derecha
 st.markdown(
@@ -30,9 +37,9 @@ confirmar_contrasena = st.text_input("Confirmar Contraseña", type="password")
 correo_electronico = st.text_input("Correo Electrónico")
 # Establece el rango mínimo para permitir años anteriores a 2013
 min_fecha_nacimiento = datetime(1900, 1, 1)
-fecha_nacimiento = st.date_input("Fecha de Nacimiento",
-                                 min_value=min_fecha_nacimiento,
-                                 max_value=datetime.now())
+fecha_nacimiento: datetime.date = st.date_input("Fecha de Nacimiento",
+                                                min_value=min_fecha_nacimiento,
+                                                max_value=datetime.now())
 
 # Casillas de verificación para términos y condiciones, y política de
 # privacidad
@@ -49,11 +56,20 @@ if st.button("Registrarse"):
     # están marcadas
     if (contrasena == confirmar_contrasena and aceptar_terminos and
             aceptar_privacidad):
-
-        # Guardar el usuario en la base de datos o realizar otras acciones
-        # necesarias
-        st.success(
-            "Registro exitoso. ¡Bienvenido, {}!".format(nombres_apellidos))
+        burn = datetime(fecha_nacimiento.year, fecha_nacimiento.month,
+                        fecha_nacimiento.day).isoformat() + "Z"
+        response = requests.post(f"{url}/auth/register", json={
+            "name": nombres_apellidos,
+            "user": usuario,
+            "password": contrasena,
+            "email": correo_electronico,
+            "burn_date": burn
+        })
+        if response.status_code < 200 or response.status_code >=300:
+            st.error(response.json()['detail'])
+        else:
+            st.success(
+                "Registro exitoso. ¡Bienvenido, {}!".format(nombres_apellidos))
     elif contrasena != confirmar_contrasena:
         st.error(
             "Las contraseñas no coinciden. Por favor, inténtalo de nuevo.")

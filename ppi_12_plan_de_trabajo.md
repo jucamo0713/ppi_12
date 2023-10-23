@@ -1,4 +1,3 @@
-
 # Calendario de Trabajo  
   
 ## 25/09/2023 -  02/10/2023  
@@ -8,7 +7,7 @@
 | Definición del calendario | Creación del calendario de actividades. |[Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo |  
 | Creación de repositorio compartido | Se crea el repositorio con toda la configuración necesaria acerca de seguridad y protección de ramas.| [Juan Camilo Montoya](https://github.com/jucamo0713) | Listo |  
 | Despliegue inicial de aplicativo | se despliega la primera versión de la app en streamlit| [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo |  
-| Desarrollo de diseños | Se establecen diseños base para crear  | [Juan Camilo Montoya](https://github.com/jucamo0713) e [Hinara Pastora Sánchez](https://github.com/HinaraSM)| Listo |  
+| Desarrollo de diseños | Se establecen diseños base para crear  | [Juan Camilo Montoya](https://github.com/jucamo0713)| Listo |  
 ## 02/10/2023 -  09/10/2023  
 | Tarea | Descripción | Responsable | Estado |  
 |--|--|--|--|
@@ -19,15 +18,15 @@
 ## 09/10/2023 -  16/10/2023  
 | Tarea | Descripción | Responsable | Estado |  
 |--|--|--|--|
-| Paso de la data del Kaggle a la base de datos. |Función que convierte la data del Kaggle y la sube a la base de datos.| [Juan Camilo Montoya](https://github.com/jucamo0713) |Sin Empezar|
-| Registro de usuarios Conexión a base de datos. |Conexión a la base de datos para la creación de usuarios, junto con el guardado de la contraseña de forma segura.| [Juan Camilo Montoya](https://github.com/jucamo0713) | Sin Empezar |  
-| Inicio de sesión. |Vista, servicio de logueo mediante método seguro.| [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar |
-| Perfil del usuario. | Vista del perfil del Usuario donde se vea toda la información del momento del registro.|[Juan Camilo Montoya](https://github.com/HinaraSM) | Sin Empezar |
+| Paso de la data del Kaggle a la base de datos. |Función que convierte la data del Kaggle y la sube a la base de datos mediante el uso de la librería **Pandas**.| [Juan Camilo Montoya](https://github.com/jucamo0713) |Listo|
+| Registro de usuarios Conexión a base de datos. |Conexión a la base de datos para la creación de usuarios, junto con el guardado de la contraseña de forma segura.| [Juan Camilo Montoya](https://github.com/jucamo0713) | Listo |  
+| Inicio de sesión. |Vista, servicio de logueo mediante método seguro.| [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo |
+| Perfil del usuario. | Vista del perfil del Usuario donde se vea toda la información del momento del registro.|[Juan Camilo Montoya](https://github.com/HinaraSM) | Listo|
 ## 16/10/2023 -  23/10/2023  
 | Tarea |Descripción| Responsable | Estado |  
 |--|--|--|--|
-| Detalle de libro. | Vista y consumo del detalle de un libro, donde se vea toda la información a detalle. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar |  
-| Registrar libros leídos, leyendo y favoritos. | Vista y servicio donde se pueda registrar un libro en un estado de según el usuario. | [Juan Camilo Montoya](https://github.com/jucamo0713) | Sin Empezar |
+| Detalle de libro. | Vista y consumo del detalle de un libro, donde se vea toda la información a detalle. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo |  
+| Registrar libros leídos, leyendo y favoritos. | Vista y servicio donde se pueda registrar un libro en un estado de según el usuario. | [Juan Camilo Montoya](https://github.com/jucamo0713) | Listo |
 ## 23/10/2023 -  30/10/2023  
 | Tarea |Descripción|Responsable | Estado |  
 |--|--|--|--|
@@ -42,15 +41,16 @@
 ## 06/11/2023 -  13/11/2023  
 | Tarea |Descripción| Responsable | Estado |  
 |--|--|--|--|
-| Recomendaciones de libros. | Sistema donde se recomienden libros al usuario según distintos patrones reconocidos| [Juan Camilo Montoya](https://github.com/jucamo0713) | Sin Empezar | 
-| Estadísticos de lectura. |Vista donde se muestren gráficos y estadísticos de lectura del usuario.| [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar |   
+| Recomendaciones de libros. | Sistema donde se recomienden libros al usuario según distintos patrones reconocidos mediante el uso de la librería **NetworkX**| [Juan Camilo Montoya](https://github.com/jucamo0713) | Sin Empezar | 
+| Estadísticos de lectura. |Vista donde se muestren gráficos y estadísticos de lectura del usuario mediante el uso de las librerías **Numpy** para el cálculo de los mismos y **Matplotlib** para mostrarlos en el formato más adecuado.| [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar |   
   
 ## 13/11/2023 -  20/11/2023  
 | Tarea |Descripción| Responsable | Estado |  
 |--|--|--|--|
-|Recomendar amigos. | Procesos para recomendar usuarios con gustos similares.| [Juan Camilo Montoya](https://github.com/jucamo0713) | Sin Empezar |  
-| Seguir y agregar amigos. |Servicio que permite la creación de las relaciones entre usuarios. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar |  
+|Recomendar amigos. | Procesos para recomendar usuarios con gustos similares mediante la librería **NetworkX**.| [Juan Camilo Montoya](https://github.com/jucamo0713) | Sin Empezar |  
+| Seguir y agregar amigos. |Servicio que permite la creación de las relaciones entre usuarios. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar | 
+| Crear términos y condiciones |Se realizará el acuerdo escrito que deben de confirmar los usuarios para poder usar la aplicación. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar |  
 ## 20/11/2023 -  27/11/2023  
 | Tarea |Descripción| Responsable | Estado |  
 |--|--|--| --|
-| Correcciones. |Ajustes definitivos para presentar la entrega final.| [Juan Camilo Montoya](https://github.com/jucamo0713) [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar |
+| Correcciones. |Ajustes definitivos para presentar la entrega final.| [Juan Camilo Montoya](https://github.com/jucamo0713) e [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar |

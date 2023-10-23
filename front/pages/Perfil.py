@@ -1,60 +1,32 @@
 import streamlit as st
-from streamlit import session_state
 
-# Obtener el nombre de usuario de la URL
-if 'usuario' in st.experimental_get_query_params():
-    usuario = st.experimental_get_query_params()['usuario'][0]
+# Estado de la aplicación: Verifica si el usuario ha iniciado sesión
+is_authenticated = "user" in st.session_state
 
-    # Verificar si el usuario está autenticado y autorizado
-    if (hasattr(session_state, 'usuario') and
-            session_state.token["usuario"] == usuario):
-        st.title(f"Bienvenido, {usuario}!")
+if not is_authenticated:
 
-        # Obtener y mostrar los datos actuales del usuario
-        nombre_actual = session_state.token.get("nombres_apellidos", "")
-        email_actual = session_state.token.get("email", "")
-        contrasena_actual = session_state.token.get("contrasena", "")
+    if ("closed_session" in st.session_state and
+            st.session_state.closed_session):
+        # Comprueba si la sesión ya se ha cerrado y muestra un mensaje de éxito
+        st.success("Sesión cerrada exitosamente. ¡Hasta luego!")
+        del st.session_state.closed_session  # Borra la marca de sesión cerrada
 
-        # Campo de entrada para la contraseña actual
-        contrasena_anterior = st.text_input("Contraseña Actual",
-                                            type="password")
+    # Si el usuario no ha iniciado sesión, muestra un mensaje de acceso no
+    # autorizado
+    st.error("Acceso no autorizado, inicie sesión para poder acceder.")
+else:
+    # Si el usuario ha iniciado sesión, muestra una bienvenida personalizada
+    # y detalles del usuario
+    usuario = st.session_state.user
+    name = usuario["name"]
+    st.title(f"Bienvenido, {name}!")
+    st.table(usuario)
 
-        # Verificar la contraseña anterior antes de permitir cambios
-        if contrasena_anterior == contrasena_actual:
-            # Iniciar el formulario
-            with ((((st.form(key='cambiar_datos_form'))))):
-                # Campo de entrada para el nuevo nombre
-                nuevo_nombre = st.text_input("Nuevo Nombre", nombre_actual)
-
-                # Campo de entrada para el nuevo correo electrónico
-                nuevo_email = st.text_input("Nuevo Correo Electrónico",
-                                            email_actual)
-
-                # Campo de entrada para cambiar la contraseña
-                nueva_contrasena = st.text_input("Nueva Contraseña",
-                                                 type="password")
-                confirmar_contrasena = st.text_input("Confirmar Contraseña",
-                                                     type="password")
-
-                # Botón para guardar los cambios
-                if st.form_submit_button("Guardar Cambios"):
-                    if nueva_contrasena == confirmar_contrasena:
-                        # Lógica para cambiar los datos y la contraseña (
-                        # reemplaza esto con tu propia lógica)
-                        session_state.token[
-                            "nombres_apellidos"] = nuevo_nombre
-                        session_state.token["email"] = nuevo_email
-                        session_state.token["contrasena"] = nueva_contrasena
-                        st.success("Cambios guardados exitosamente.")
-                    else:
-                        st.error("Las contraseñas no coinciden. "
-                                 "Inténtalo de nuevo.")
-        elif contrasena_anterior and contrasena_anterior != contrasena_actual:
-            st.error("Contraseña incorrecta. Inténtalo de nuevo.")
-            
-        # Botón para cerrar sesión
-        if st.button("Cerrar Sesión"):
-            del session_state.token
-            st.success("Sesión cerrada exitosamente. ¡Hasta luego!")
-    else:
-        st.error("Acceso no autorizado, inicie sesión para poder acceder.")
+    # Botón para cerrar sesión
+    if st.button("Cerrar Sesión"):
+        # Borra el token de sesión y los datos del usuario
+        del st.session_state.token
+        del st.session_state.user
+        st.session_state.closed_session = True  # Marca la sesión como cerrada
+        st.experimental_rerun()  # Reinicia la aplicación para reflejar la
+        # sesión cerrada

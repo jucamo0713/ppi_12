@@ -4,6 +4,7 @@ from fastapi.params import Header
 
 from ..jwt.Guard import validate_token
 
+# Crear una instancia de APIRouter
 ME = APIRouter()
 
 # Cargar la configuración desde el archivo .env
@@ -22,6 +23,16 @@ def me(authentication: str = Header(...)):
 
     Returns:
         dict: Datos del usuario autenticado.
+
+    Raises:
+        HTTPException: Si el token ha expirado o es inválido.
+
+    Example:
+    ```python
+    response = me("Bearer your_token_here")
+    print(response)
+    ```
+
     """
     # Validar el token de autenticación utilizando la función validate_token
     token_data = validate_token(authentication)

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from .book.BookRoutes import BookRoutes
 from .auth.AuthRoutes import AuthRoutes
+from .datasets.DatasetsRoutes import DATASETS_ROUTES
 from .db.Connection import Connection
 from .user.UserRoutes import USER_ROUTES
 
@@ -22,7 +23,7 @@ async def root():
 
 
 # Obtener las rutas y controladores
-routers = [*BookRoutes, *AuthRoutes, *USER_ROUTES]
+routers = [*BookRoutes, *AuthRoutes, *USER_ROUTES, *DATASETS_ROUTES]
 
 # Agregar las rutas y controladores a la aplicación
 for router in routers:

@@ -8,20 +8,20 @@ config = dotenv_values(".env")
 
 class JwtUtils:
     """
-        Clase de utilidad para trabajar con tokens JWT en FastAPI.
+    Clase de utilidad para trabajar con tokens JWT en FastAPI.
 
-        Métodos:
-        - create_jwt_token(data: dict, expiration_minutes: int) -> str: Crea un
-          token JWT con los datos proporcionados y una duración en minutos.
-        - decode_jwt_token(token: str) -> dict: Decodifica un token JWT y
-          verifica su validez.
+    Métodos:
+    - create_jwt_token(data: dict, expiration_minutes: int) -> str: Crea un
+      token JWT con los datos proporcionados y una duración en minutos.
+    - decode_jwt_token(token: str) -> dict: Decodifica un token JWT y
+      verifica su validez.
 
-        Atributos:
-        - No tiene atributos de clase.
+    Atributos:
+    - No tiene atributos de clase.
 
-        Args:
-            No toma argumentos en el constructor de la clase.
-        """
+    Args:
+        No toma argumentos en el constructor de la clase.
+    """
 
     @classmethod
     def create_jwt_token(cls, data: dict, expiration_minutes: int):
@@ -34,6 +34,9 @@ class JwtUtils:
 
         Returns:
             str: Token JWT.
+
+        Raises:
+            No genera excepciones.
         """
         # Calcular la fecha de expiración basada en el tiempo actual y la
         # duración proporcionada en minutos

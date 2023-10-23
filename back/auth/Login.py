@@ -43,6 +43,8 @@ async def login(request: Request, login_data: LoginRequest):
     Returns:
     - dict: Un diccionario que contiene el token de acceso JWT.
     """
+    # Busca al usuario en la base de datos a partir del nombre de usuario o
+    # correo electrónico
     user_data = request.app.database['users'].find_one({
         "$or": [
             {"user": re.compile(f'^{login_data.user}$', re.IGNORECASE)},
@@ -55,6 +57,7 @@ async def login(request: Request, login_data: LoginRequest):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
     user = User(**user_data)
+    # Hash de la contraseña proporcionada con un salt
     hashed_password = hashlib.sha256((login_data.password + config[
         "HASHING_SALT"]).encode()).hexdigest()
 
@@ -64,6 +67,7 @@ async def login(request: Request, login_data: LoginRequest):
 
     # Genera un token JWT para el usuario autenticado
     token_data = user.to_jsonable()
+    del token_data['password']
     jwt_token = JwtUtils.create_jwt_token(token_data,
                                           int(config['SESSION_EXPIRATION']))
 

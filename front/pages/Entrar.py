@@ -1,10 +1,12 @@
+# Importar las bibliotecas necesarias
 import requests
 import streamlit as st
-from streamlit import session_state
 from dotenv import dotenv_values
 
+# Cargar la configuración desde el archivo .env
 config = dotenv_values(".env")
 
+# Obtener la URL de la API desde las secrets de Streamlit o el archivo .env
 url = st.secrets['BACK_URL'] if st.secrets and 'BACK_URL' in st.secrets else \
     config['BACK_URL']
 
@@ -12,30 +14,46 @@ url = st.secrets['BACK_URL'] if st.secrets and 'BACK_URL' in st.secrets else \
 def verificar_credenciales(usuario_input, contrasena_input):
     """
     Verifica las credenciales del usuario.
-    
+
     Parameters:
         usuario_input (str): Nombre de usuario ingresado por el usuario.
         contrasena_input (str): Contraseña ingresada por el usuario.
-    
+
     Returns:
         dict or None: Si las credenciales son correctas, devuelve el
         usuario encontrado.
         Si las credenciales son incorrectas, devuelve None.
     """
+    # Realiza una solicitud POST a la API para verificar las credenciales
+    # del usuario
     response = requests.post(f"{url}/auth/login", json={
         "user": usuario_input,
         "password": contrasena_input,
     })
+
+    # Comprueba el código de estado de la respuesta
     if response.status_code < 200 or response.status_code >= 300:
-        st.error(response.json()['detail'])
+        st.error(response.json()['detail'])  # Muestra un error en caso de
+        # problemas
+        return None
     else:
-        st.success(
-            "Inicio de sesión exitoso. ¡Bienvenido!")
-    return response.json()["access_token"]
+        st.success("Inicio de sesión exitoso. ¡Bienvenido!")  # Muestra un
+        # mensaje de éxito
+        return response.json()["access_token"]  # Devuelve el token de acceso
 
 
 # Estado de la aplicación
-is_authenticated = False if not ("token" in st.session_state) else True
+is_authenticated = False
+
+if "token" in st.session_state:
+    # Si se ha almacenado un token en el estado de la sesión, intenta
+    # obtener el perfil del usuario
+    response = requests.get(f"{url}/user/me", headers={
+        "Authentication": f"Bearer {st.session_state.token}"})
+    if 200 <= response.status_code < 300:
+        is_authenticated = True
+        st.session_state.user = response.json()  # Almacena el perfil del
+        # usuario en el estado de la sesión
 
 # Logo en la esquina superior derecha
 st.markdown(
@@ -56,14 +74,24 @@ st.markdown(
 )
 
 if not is_authenticated:
+    # Si el usuario no está autenticado
     st.title("Inicia sesión en LitWave")
-    usuario_input = st.text_input("Ingrese su nombre de usuario")
-    contrasena_input = st.text_input("Ingrese su contraseña", type="password")
-    if st.button("Iniciar Sesión"):
-        token = verificar_credenciales(usuario_input, contrasena_input)
+    usuario_input = st.text_input("Ingrese su nombre de usuario",
+                                  disabled=is_authenticated)  # Campo de
+    # entrada para el nombre de usuario
+    contrasena_input = st.text_input("Ingrese su contraseña",
+                                     type="password",
+                                     disabled=is_authenticated)  # Campo de
+    # entrada para la contraseña
+    if st.button("Iniciar Sesión"):  # Botón para iniciar sesión
+        token = verificar_credenciales(usuario_input, contrasena_input)  #
+        # Verifica las credenciales
         if token:
-            session_state.token = token
+            st.session_state.token = token  # Almacena el token en el estado
+            # de la sesión
             is_authenticated = True
-            # redirigir_a_pagina_privada()  # Llama a la función de redirección
+            st.experimental_rerun()  # Reinicia la aplicación para mostrar
+            # la página autenticada
 else:
-    st.write("Ya estás loggueado")
+    st.write("Ya Iniciaste sesión")  # Muestra un mensaje si el usuario ya
+    # está autenticado

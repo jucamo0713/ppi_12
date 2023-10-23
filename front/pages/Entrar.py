@@ -1,23 +1,13 @@
+import requests
 import streamlit as st
 from streamlit import session_state
+from dotenv import dotenv_values
 
-# Datos del usuario de prueba
-usuario_prueba = {
-    "usuario": "hinara",
-    "contrasena": "hinara12",
-    "nombres_apellidos": "Hinara Pastora Sánchez Mata",
-    "email": "hinarasm01212@gmail.com"
-}
+config = dotenv_values(".env")
 
-def redirigir_a_pagina_privada():
-    """
-    Redirige a la página privada después de iniciar sesión.
-    Establece los parámetros de la URL y redirige a la nueva URL.
-    Limpia los parámetros de la URL después de redirigir.
-    """
-    st.experimental_set_query_params(usuario=session_state.usuario["usuario"])
-    st.rerun()
-    st.experimental_set_query_params()
+url = st.secrets['BACK_URL'] if st.secrets and 'BACK_URL' in st.secrets else \
+    config['BACK_URL']
+
 
 def verificar_credenciales(usuario_input, contrasena_input):
     """
@@ -28,19 +18,24 @@ def verificar_credenciales(usuario_input, contrasena_input):
         contrasena_input (str): Contraseña ingresada por el usuario.
     
     Returns:
-        dict or None: Si las credenciales son correctas, devuelve el usuario encontrado.
-                     Si las credenciales son incorrectas, devuelve None.
+        dict or None: Si las credenciales son correctas, devuelve el
+        usuario encontrado.
+        Si las credenciales son incorrectas, devuelve None.
     """
-    usuario_encontrado = None
-    if usuario_prueba["usuario"] == usuario_input and usuario_prueba["contrasena"] == contrasena_input:
-        usuario_encontrado = usuario_prueba
-        st.success("Inicio de sesión exitoso. ¡Bienvenido, {}!".format(usuario_encontrado["nombres_apellidos"]))
+    response = requests.post(f"{url}/auth/login", json={
+        "user": usuario_input,
+        "password": contrasena_input,
+    })
+    if response.status_code < 200 or response.status_code >= 300:
+        st.error(response.json()['detail'])
     else:
-        st.error("Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.")
-    return usuario_encontrado
+        st.success(
+            "Inicio de sesión exitoso. ¡Bienvenido!")
+    return response.json()["access_token"]
+
 
 # Estado de la aplicación
-is_authenticated = False
+is_authenticated = False if not ("token" in st.session_state) else True
 
 # Logo en la esquina superior derecha
 st.markdown(
@@ -53,7 +48,8 @@ st.markdown(
     }
     </style>
     <div class="logo-container">
-        <img src="https://i.ibb.co/CWhPGm1/logo.png" alt="logo" style="max-width: 150px; height: auto;">
+        <img src="https://i.ibb.co/CWhPGm1/logo.png" alt="logo" 
+        style="max-width: 150px; height: auto;">
     </div>
     """,
     unsafe_allow_html=True
@@ -64,8 +60,10 @@ if not is_authenticated:
     usuario_input = st.text_input("Ingrese su nombre de usuario")
     contrasena_input = st.text_input("Ingrese su contraseña", type="password")
     if st.button("Iniciar Sesión"):
-        usuario = verificar_credenciales(usuario_input, contrasena_input)
-        if usuario:
-            session_state.usuario = usuario
+        token = verificar_credenciales(usuario_input, contrasena_input)
+        if token:
+            session_state.token = token
             is_authenticated = True
-            redirigir_a_pagina_privada()  # Llama a la función de redirección
+            # redirigir_a_pagina_privada()  # Llama a la función de redirección
+else:
+    st.write("Ya estás loggueado")

@@ -1,7 +1,6 @@
 import requests
 import streamlit as st
 from datetime import datetime
-
 from dotenv import dotenv_values
 
 config = dotenv_values(".env")

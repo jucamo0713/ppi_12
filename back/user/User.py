@@ -2,7 +2,6 @@ from datetime import datetime
 from bson import ObjectId
 from pydantic import BaseModel, Field, EmailStr
 
-
 class User(BaseModel):
     """
     Modelo de datos para representar un usuario.
@@ -13,8 +12,7 @@ class User(BaseModel):
     - user (str): Nombre de usuario (nombre de inicio de sesión).
     - password (str): Contraseña del usuario.
     - email (str): Dirección de correo electrónico del usuario.
-    - burn_date (datetime): Fecha de nacimiento del usuario en formato
-    ISODate (AAAA-MM-DDTHH:MM:SS).
+    - burn_date (datetime): Fecha de nacimiento del usuario en formato ISODate (AAAA-MM-DDTHH:MM:SS).
 
     Args:
         id (str): Identificador único del usuario.
@@ -22,20 +20,15 @@ class User(BaseModel):
         user (str): Nombre de usuario (nombre de inicio de sesión).
         password (str): Contraseña del usuario.
         email (str): Dirección de correo electrónico del usuario.
-        burn_date (datetime): Fecha de nacimiento del usuario en formato
-        ISODate (AAAA-MM-DDTHH:MM:SS).
+        burn_date (datetime): Fecha de nacimiento del usuario en formato ISODate (AAAA-MM-DDTHH:MM:SS).
     """
 
     id: ObjectId = Field(default_factory=ObjectId, alias="_id")
     name: str = Field(..., description="Nombre completo del usuario.")
-    user: str = Field(..., description="Nombre de usuario (nombre de inicio "
-                                       "de sesión).")
+    user: str = Field(..., description="Nombre de usuario (nombre de inicio de sesión).")
     password: str = Field(..., description="Contraseña del usuario.")
-    email: EmailStr = Field(..., description="Dirección de correo "
-                                             "electrónico del usuario.")
-    burn_date: datetime = Field(..., description="Fecha de nacimiento del "
-                                                 "usuario en formato ISODate "
-                                                 "(AAAA-MM-DDTHH:MM:SS).")
+    email: EmailStr = Field(..., description="Dirección de correo electrónico del usuario.")
+    burn_date: datetime = Field(..., description="Fecha de nacimiento del usuario en formato ISODate (AAAA-MM-DDTHH:MM:SS).")
 
     class Config:
         """
@@ -43,22 +36,27 @@ class User(BaseModel):
 
         Atributos:
         - arbitrary_types_allowed (bool): Permite tipos de datos arbitrarios.
-        - json_encoders (dict): Diccionario de codificadores JSON
-        personalizados.
+        - json_encoders (dict): Diccionario de codificadores JSON personalizados.
 
         Args:
-            arbitrary_types_allowed (bool): Permite tipos de datos
-            arbitrarios en el modelo.
-            json_encoders (dict): Diccionario de codificadores JSON
-            personalizados.
+            arbitrary_types_allowed (bool): Permite tipos de datos arbitrarios en el modelo.
+            json_encoders (dict): Diccionario de codificadores JSON personalizados.
 
         """
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
     def to_jsonable(self, **kwargs):
+        """
+        Convierte el objeto `User` a un diccionario JSON.
+
+        Args:
+            **kwargs: Argumentos adicionales.
+
+        Returns:
+            dict: Un diccionario JSON que representa el objeto `User`.
+        """
         user_dict = self.model_dump(**kwargs)
         user_dict['id'] = str(user_dict['id'])
-        user_dict[
-            'burn_date'] = self.burn_date.isoformat()
+        user_dict['burn_date'] = self.burn_date.isoformat()
         return user_dict

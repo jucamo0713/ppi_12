@@ -1,9 +1,18 @@
 # Importar librerías necesarias
-import requests  # Para hacer solicitudes HTTP
-import streamlit as st  # Para crear la aplicación web
-from dotenv import dotenv_values  # Para cargar variables de entorno desde
+from io import BytesIO
 
-# un archivo .env
+import numpy as np
+# Para manipular imagenes
+import skimage.io
+# Para hacer solicitudes HTTP
+import requests
+# Para crear la aplicación web
+import streamlit as st
+# Para cargar variables de entorno desde un archivo .env
+from dotenv import dotenv_values
+
+from fake_useragent import UserAgent
+ua = UserAgent()
 
 # Cargar la configuración desde el archivo .env
 config = dotenv_values(".env")
@@ -128,6 +137,9 @@ if value:
 
         # Función para volver a la lista de libros
         def volver():
+            """
+            Función que permite volver del detalle al listado.
+            """
             del st.experimental_get_query_params()['book_id']
             st.experimental_set_query_params()
 
@@ -153,8 +165,14 @@ if value:
             if 'prev_page' in st.session_state and st.session_state.prev_page
             else st.session_state.page
         }
-        st.session_state.page = pagination['page']
-
+        with st.sidebar:
+            [logo, title] = st.columns(2)
+            with logo:
+                st.image("https://i.ibb.co/CWhPGm1/logo.png", width=100)
+            with title:
+                st.title("LitWave")
+            # Pie de página
+            st.write("© 2023 LitWave. Todos los derechos reservados.")
         # Logo en la esquina superior derecha
         st.markdown(
             """
@@ -162,12 +180,12 @@ if value:
             .logo-container {
                 position: fixed;
                 top: 46px;
-                right: 10px;
+                left: 10px;
             }
             </style>
             <div class="logo-container">
                 <img src="https://i.ibb.co/CWhPGm1/logo.png" alt="logo" 
-                style="max-width: 150px; height: auto;">
+                style="max-width: 50px; height: auto;">
             </div>
             """,
             unsafe_allow_html=True
@@ -186,21 +204,60 @@ if value:
             'limit': pagination['LIMIT'],
             'page': pagination['page']
         }).json()
-        libros = response['data']  # Lista de libros
-        metadata = response['metadata']  # Metadatos
+        # Lista de libros
+        libros = response['data']
+        # Metadatos
+        metadata = response['metadata']
 
-        # Filtrar y mostrar los libros en 5 columnas
         columnas = st.columns(5)
+
+        # Mspeo de todos los libros
         for i, resultado in enumerate(libros):
-            with (columnas[i % 5]):  # Alternar entre las 5 columnas
-                st.image(resultado["image"], caption=resultado["title"],
-                         use_column_width=True)
+            # Se coloca un separador cada vez que termine una fila
+            if i != 0 and i % 5 == 0:
+                st.markdown("---")
+                columnas = st.columns(5)
+
+            # Alternar entre las 5 columnas
+            with ((columnas[i % 5])):
+                user_agent = ua.random
+                data_image = requests.get(resultado["image"], headers={
+                    "User-Agent": user_agent
+                })
+                if data_image.status_code == 200:
+                    # Se crea BytesIO object para que actue como un archivo
+                    # falso
+                    img_file = BytesIO(data_image.content)
+                    try:
+                        # Read the image using 'skimage.io.imread'
+                        image = skimage.io.imread(img_file)
+                        desired_height = image.shape[1] * 3 / 2
+                        crop_top = int((image.shape[0] - desired_height) // 2)
+                        if crop_top >= 0:
+                            crop_bottom = int(image.shape[0] - crop_top)
+                            image = image[crop_top:crop_bottom, :]
+                        else:
+                            black_part = np.zeros((-crop_top, image.shape[
+                                1], 3), dtype=np.uint8)
+                            image = np.vstack([black_part, image, black_part])
+                    except Exception:
+                        image = ("https://islandpress.org/sites/default/files"
+                                 "/default_book_cover_2015.jpg")
+                else:
+                    image = ("https://islandpress.org/sites/default/files"
+                             "/default_book_cover_2015.jpg")
+                st.image(image,
+                         use_column_width=True, )
+                if len(resultado["title"]) > 30:
+                    resultado["title"] = resultado["title"][:30] + "..."
+
+                if len(resultado["author"]) > 30:
+                    resultado["author"] = resultado["author"][:30] + "..."
                 st.write("**Título:**", resultado["title"])
                 st.write("**Autor:**", resultado["author"])
                 st.button('Detalle', key=f'detail{i}',
                           on_click=(lambda x: st.experimental_set_query_params(
                               book_id=x)), args=[resultado["_id"]])
-                st.markdown("---")
         # Paginación
         if metadata['totalPages'] > 1:
             st.write(
@@ -213,7 +270,7 @@ if value:
                 st.button("Siguiente", key="next_page")
 
             # Selector de página
-            st.number_input("page", value=int(st.session_state.page),
+            st.number_input("page",
                             key="page",
                             step=1, min_value=1,
                             max_value=int(metadata['totalPages']))

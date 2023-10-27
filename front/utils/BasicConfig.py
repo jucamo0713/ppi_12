@@ -1,7 +1,6 @@
 # Importar librerías necesarias
 import requests
 import streamlit as st
-
 from front.utils.GetUrl import get_url
 
 

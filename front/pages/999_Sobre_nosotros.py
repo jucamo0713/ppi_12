@@ -1,25 +1,8 @@
 import streamlit as st
 
-# Logo en la esquina superior derecha
-st.markdown(
-    """
-    <style>
-    .logo-container {
-        position: fixed;
-        top: 50px;
-        right: 10px;
-    }
-    </style>
-    <div class="logo-container">
-        <img src="https://i.ibb.co/CWhPGm1/logo.png" 
-        alt="logo"style="max-width: 150px; height: auto;">
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+from front.utils.BasicConfig import basic_config
 
-# Descripción básica de la aplicación
-st.title("LitWave")
+basic_config()
 st.markdown("## Bienvenido a la red social de los lectores")
 st.markdown("### LitWave es una plataforma para los amantes de la lectura, "
             "donde podrás:")

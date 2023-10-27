@@ -8,34 +8,13 @@ import skimage.io
 import requests
 # Para crear la aplicación web
 import streamlit as st
-# Para cargar variables de entorno desde un archivo .env
-from dotenv import dotenv_values
-
 from fake_useragent import UserAgent
+from front.utils.BasicConfig import basic_config
+from front.utils.GetUrl import get_url
+
 ua = UserAgent()
-
-# Cargar la configuración desde el archivo .env
-config = dotenv_values(".env")
-
-# Cargar la URL de la API desde las secrets de Streamlit o desde el archivo
-# .env
-url = st.secrets[
-    'BACK_URL'] if st.secrets and 'BACK_URL' in st.secrets else \
-    config['BACK_URL']
-
-# Configurar la página de Streamlit
-st.set_page_config(
-    page_title="LitWave",
-    page_icon="https://i.ibb.co/CWhPGm1/logo.png",
-    initial_sidebar_state="collapsed",
-)
-
-try:
-    # Realizar una solicitud a la API para verificar si está disponible
-    value = requests.get(url).json()['success']
-except requests.exceptions.RequestException:
-    value = False
-
+url = get_url()
+value = basic_config(url=url)
 if value:
     # Verificar si se proporciona 'book_id' en la URL
     if "book_id" in st.experimental_get_query_params():
@@ -128,7 +107,7 @@ if value:
                         del st.session_state['user']
                         del st.session_state['token']
                         st.error(
-                            "Por favor, vuelve a iniciar sesión")
+                            "Por favor, vuelva a iniciar sesión")
                     elif (response.json() and 'detail' in
                           response.json()):
                         st.error(response.json()['detail'])
@@ -165,32 +144,6 @@ if value:
             if 'prev_page' in st.session_state and st.session_state.prev_page
             else st.session_state.page
         }
-        with st.sidebar:
-            [logo, title] = st.columns(2)
-            with logo:
-                st.image("https://i.ibb.co/CWhPGm1/logo.png", width=100)
-            with title:
-                st.title("LitWave")
-            # Pie de página
-            st.write("© 2023 LitWave. Todos los derechos reservados.")
-        # Logo en la esquina superior derecha
-        st.markdown(
-            """
-            <style>
-            .logo-container {
-                position: fixed;
-                top: 46px;
-                left: 10px;
-            }
-            </style>
-            <div class="logo-container">
-                <img src="https://i.ibb.co/CWhPGm1/logo.png" alt="logo" 
-                style="max-width: 50px; height: auto;">
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
         # Título de la página
         st.header("Explora y descubre nuevos autores y libros")
 
@@ -280,10 +233,3 @@ if value:
         # Mensaje si no hay resultados
         if not libros:
             st.info("No se encontraron resultados para la búsqueda.")
-else:
-    # Página de advertencia si la API no está disponible
-    st.write("""
-                    # Aplicación no disponible en este momento.
-                    Lo sentimos, pero la aplicación no está disponible en este 
-                    momento. Por favor, inténtelo de nuevo más tarde.
-                """)

@@ -69,7 +69,9 @@ async def register(request: Request, user: RegisterRequest):
                                                    "email": user.email,
                                                    "burn_date": user.burn_date,
                                                    "password":
-                                                       hashed_password})
+                                                       hashed_password,
+                                                   "registered_date":
+                                                       datetime.now()})
     data = request.app.database['users'].find_one({'_id': id.inserted_id})
     response: User = User(**data)
     return response

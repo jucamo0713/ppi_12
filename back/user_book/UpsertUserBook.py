@@ -4,8 +4,8 @@ from fastapi.params import Header
 from pydantic import BaseModel, Field
 from pymongo import ReturnDocument
 
-from .UserBook import UserBook
-from ..jwt.Guard import validate_token
+from user_book.UserBook import UserBook
+from jwt_utils.Guard import validate_token
 
 UPSERT_USER_BOOK = APIRouter()
 

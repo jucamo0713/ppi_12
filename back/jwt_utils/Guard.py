@@ -1,7 +1,5 @@
 from fastapi import HTTPException
-
-# Importa la clase JwtUtils del módulo Utils
-from .Utils import JwtUtils
+from jwt_utils.Utils import JwtUtils
 
 
 def validate_token(authorization):

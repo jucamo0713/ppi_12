@@ -1,14 +1,11 @@
 # Importar las bibliotecas necesarias
 import requests
 import streamlit as st
-from dotenv import dotenv_values
 
-# Cargar la configuración desde el archivo .env
-config = dotenv_values(".env")
+from front.utils.GetUrl import get_url
 
 # Obtener la URL de la API desde las secrets de Streamlit o el archivo .env
-url = st.secrets['BACK_URL'] if st.secrets and 'BACK_URL' in st.secrets else \
-    config['BACK_URL']
+url = get_url()
 
 
 def verificar_credenciales(usuario_input, contrasena_input):
@@ -33,8 +30,8 @@ def verificar_credenciales(usuario_input, contrasena_input):
 
     # Comprueba el código de estado de la respuesta
     if response.status_code < 200 or response.status_code >= 300:
-        st.error(response.json()['detail'])  # Muestra un error en caso de
-        # problemas
+        # Muestra un error en caso de problemas
+        st.error(response.json()['detail'])
         return None
     else:
         st.success("Inicio de sesión exitoso. ¡Bienvenido!")  # Muestra un

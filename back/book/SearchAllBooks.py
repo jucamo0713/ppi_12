@@ -1,8 +1,8 @@
 import re
 from fastapi import APIRouter, Request
 
-from .Book import Book
-from ..db.PaginatedSearch import paginated_search
+from book.Book import Book
+from db.PaginatedSearch import paginated_search
 
 SEARCH_ALL_BOOKS = APIRouter()
 

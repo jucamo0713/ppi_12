@@ -1,10 +1,10 @@
 # Importar librerías necesarias
 import requests
 import streamlit as st
-from front.utils.GetUrl import get_url
+from utils.GetUrl import get_url
 
 
-def basic_config(url=None):
+def basic_config(url: str = None):
     """
     Configura la página de Streamlit y muestra elementos como el logo,
     título y pie de página.

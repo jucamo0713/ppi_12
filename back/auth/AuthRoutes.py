@@ -1,5 +1,5 @@
-from .Login import LOGIN
-from .Register import REGISTER
+from auth.Login import LOGIN
+from auth.Register import REGISTER
 
 # Definición de las rutas y controladores
 AuthRoutes = [{'path': '/auth',

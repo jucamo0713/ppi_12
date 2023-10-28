@@ -1,6 +1,4 @@
 # Importar librerías necesarias
-from io import BytesIO
-
 import numpy as np
 # Para manipular imagenes
 import skimage.io
@@ -8,141 +6,50 @@ import skimage.io
 import requests
 # Para crear la aplicación web
 import streamlit as st
+from io import BytesIO
 from fake_useragent import UserAgent
-from front.utils.BasicConfig import basic_config
-from front.utils.GetUrl import get_url
+
+from components.BookDetailComponent import book_detail_component
+from utils.BasicConfig import basic_config
+from utils.GetUrl import get_url
 
 ua = UserAgent()
 url = get_url()
 value = basic_config(url=url)
+
+LIMIT = 15
+
+
+# Función para volver a la lista de libros
+def volver():
+    """
+    Función que permite volver del detalle al listado.
+    """
+    del st.experimental_get_query_params()['book_id']
+    st.experimental_set_query_params()
+
+
+# Función para reiniciar los parámetros de paginación
+def restart_pagination_params():
+    st.session_state.page = 1
+
+
 if value:
     # Verificar si se proporciona 'book_id' en la URL
     if "book_id" in st.experimental_get_query_params():
-        # Realizar una solicitud a la API para obtener detalles del libro
-        response = requests.get(f"{url}/books/by-id", params={
-            "id": st.experimental_get_query_params()["book_id"]})
-
-        # Comprobar el estado de la respuesta
-        if response.status_code != 200:
-            try:
-                if "detail" in response.json():
-                    st.error(response.json()['detail'])
-                else:
-                    st.error(
-                        "Error desconocido, inténtelo de nuevo más tarde")
-            except Exception:
-                st.error(
-                    "Error desconocido, inténtelo de nuevo más tarde")
-        else:
-            # Mostrar los detalles del libro
-            book = response.json()
-            st.title(book['title'])
-            st.image(book['image'])
-            st.table(book)
-
-            # Verificar si el usuario está autenticado
-            if 'user' in st.session_state:
-                # Realizar una solicitud para obtener los datos del usuario
-                # para el libro
-                response = requests.get(f"{url}/user_book", headers={
-                    "Authentication": f"Bearer {st.session_state.token}"},
-                                        params={
-                                            "book_id": book['_id']})
-
-                if 200 <= response.status_code < 300:
-                    data = response.json()
-                    columns = st.columns(3)
-
-                    # Mostrar opciones para marcar el libro
-                    with columns[0]:
-                        read = st.checkbox("Leído", value=data['read'],
-                                           key="read")
-
-                    with columns[1]:
-                        in_process = st.checkbox(
-                            "En proceso de Lectura",
-                            value=data['reading'], key="reding")
-
-                    with columns[2]:
-                        favorites = st.checkbox("Favoritos",
-                                                value=data['favorite'],
-                                                key="favorite")
-
-                    if st.button('Guardar'):
-                        # Realizar una solicitud para guardar los cambios
-                        response = requests.put(
-                            f"{url}/user_book/upsert",
-                            headers={
-                                "Authentication": f"Bearer "
-                                                  f"{st.session_state.token}"},
-                            params={"book_id": book['_id']},
-                            json={
-                                "read": read,
-                                "reading": in_process,
-                                "favorite": favorites,
-                            })
-
-                        # Comprobar el estado de la respuesta
-                        if 200 <= response.status_code < 300:
-                            st.success(
-                                "Datos guardados satisfactoriamente")
-                        else:
-                            if response.status_code == 401:
-                                # Eliminar la información del usuario si no
-                                # está autenticado
-                                del st.session_state['user']
-                                del st.session_state['token']
-                                st.error(
-                                    "Por favor, vuelve a iniciar sesión")
-                            elif (
-                                    response.json() and 'detail' in
-                                    response.json()):
-                                st.error(response.json()['detail'])
-                            else:
-                                st.error("Error desconocido")
-                else:
-                    if response.status_code == 401:
-                        # Eliminar la información del usuario si no
-                        # está autenticado
-                        del st.session_state['user']
-                        del st.session_state['token']
-                        st.error(
-                            "Por favor, vuelva a iniciar sesión")
-                    elif (response.json() and 'detail' in
-                          response.json()):
-                        st.error(response.json()['detail'])
-                    else:
-                        st.error("Error desconocido")
-
-        # Función para volver a la lista de libros
-        def volver():
-            """
-            Función que permite volver del detalle al listado.
-            """
-            del st.experimental_get_query_params()['book_id']
-            st.experimental_set_query_params()
-
-
+        book_detail_component(st.experimental_get_query_params()["book_id"][0], url=url)
+        book = {}
         st.button('Volver', key='volver', on_click=volver)
     else:
-        # Función para reiniciar los parámetros de paginación
-        def restart_pagination_params():
-            st.session_state.page = 1
-
-
         # Inicializar el estado de la sesión para el paginado
         if 'page' not in st.session_state:
             st.session_state.page = 1
 
-        # Definir los parámetros de paginación (LIMIT y page) basados en el
+        # Definir los parámetros de paginación (limit y page) basados en el
         # estado de la sesión
         pagination = {
-            'LIMIT': 15,
-            'page': st.session_state.page + 1
-            if 'next_page' in st.session_state and st.session_state.next_page
-            else st.session_state.page - 1
-            if 'prev_page' in st.session_state and st.session_state.prev_page
-            else st.session_state.page
+            'limit': LIMIT,
+            'page': st.session_state.page
         }
         # Título de la página
         st.header("Explora y descubre nuevos autores y libros")
@@ -154,7 +61,7 @@ if value:
         # Realizar una solicitud a la API para obtener una lista de libros
         response = requests.get(f"{url}/books", {
             'search_param': busqueda,
-            'limit': pagination['LIMIT'],
+            'limit': pagination['limit'],
             'page': pagination['page']
         }).json()
         # Lista de libros
@@ -216,18 +123,11 @@ if value:
             st.write(
                 f"Mostrando página {pagination['page']} de "
                 f"{int(metadata['totalPages'])}")
-            if pagination['page'] > 1:
-                st.button("Anterior", key="prev_page")
-
-            if pagination['page'] < metadata['totalPages']:
-                st.button("Siguiente", key="next_page")
-
-            # Selector de página
             st.number_input("page",
                             key="page",
+                            label_visibility='hidden',
                             step=1, min_value=1,
                             max_value=int(metadata['totalPages']))
-
         st.markdown("---")
 
         # Mensaje si no hay resultados

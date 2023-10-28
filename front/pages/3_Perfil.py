@@ -1,7 +1,7 @@
 import streamlit as st
-from front.components.ProfileComponent import profile_component
-from front.utils.BasicConfig import basic_config
-from front.utils.GuardSession import guard_session
+from components.ProfileComponent import profile_component
+from utils.BasicConfig import basic_config
+from utils.GuardSession import guard_session
 
 # Configura la aplicación básica
 value = basic_config()

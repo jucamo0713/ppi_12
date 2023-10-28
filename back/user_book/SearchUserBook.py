@@ -1,9 +1,8 @@
 from bson import ObjectId
 from fastapi import APIRouter, Request
 from fastapi.params import Header
-
-from .UserBook import UserBook
-from ..jwt.Guard import validate_token
+from user_book.UserBook import UserBook
+from jwt_utils.Guard import validate_token
 
 SEARCH_USER_BOOK = APIRouter()
 

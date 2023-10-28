@@ -63,7 +63,7 @@ class JwtUtils:
         """
         try:
             payload = jwt.decode(token, config['JWT_SECRET_KEY'],
-                                 algorithms=['HS256', 'HS384'])
+                                       algorithms=['HS256', 'HS384'])
             return payload
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=401, detail="Token expirado")

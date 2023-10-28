@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Literal
 import streamlit as st
-from front.components.PrivacyPolicyComponent import privacy_policy_component
-from front.utils.HttpUtils import HttpUtils
+from components.PrivacyPolicyComponent import privacy_policy_component
+from utils.HttpUtils import HttpUtils
 
 # Establece el rango mínimo para permitir años anteriores a 2013
 MIN_FECHA_NACIMIENTO = datetime(1900, 1, 1)

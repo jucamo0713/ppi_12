@@ -2,7 +2,7 @@
 import requests
 import streamlit as st
 
-from front.utils.GetUrl import get_url
+from utils.GetUrl import get_url
 
 # Obtener la URL de la API desde las secrets de Streamlit o el archivo .env
 url = get_url()
@@ -30,6 +30,7 @@ def verificar_credenciales(usuario_input, contrasena_input):
 
     # Comprueba el código de estado de la respuesta
     if response.status_code < 200 or response.status_code >= 300:
+        print(response)
         # Muestra un error en caso de problemas
         st.error(response.json()['detail'])
         return None

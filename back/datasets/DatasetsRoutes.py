@@ -1,4 +1,4 @@
-from .LoadBooksDatasetToDb import LOAD_BOOKS_DATASET_TO_DB
+from datasets.LoadBooksDatasetToDb import LOAD_BOOKS_DATASET_TO_DB
 
 # Definición de las rutas y controladores
 DATASETS_ROUTES = [{'path': '/datasets',

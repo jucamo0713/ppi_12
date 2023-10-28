@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
-from ..user.User import User
+from user.User import User
 
 REGISTER = APIRouter()
 

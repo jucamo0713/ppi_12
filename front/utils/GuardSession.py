@@ -9,7 +9,7 @@ def guard_session(allow_only_signed=False, allow_only_unsigned=False):
     predeterminado: False).
     :param allow_only_unsigned: Permite acceso solo a usuarios no
     autenticados (predeterminado: False).
-    :return: Un diccionario con el estado de autenticación y el usuario (si
+    :return: Un diccionario con el estado de autenticación, el usuario ye el token (si
     está autenticado).
     """
     # Estado de la aplicación
@@ -22,5 +22,6 @@ def guard_session(allow_only_signed=False, allow_only_unsigned=False):
 
     return {
         "is_authenticated": is_authenticated,
-        "user": st.session_state['user'] if is_authenticated else None
+        "user": st.session_state['user'] if is_authenticated else None,
+        "token": st.session_state['token'] if is_authenticated else None,
     }

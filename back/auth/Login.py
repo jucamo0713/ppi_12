@@ -4,8 +4,8 @@ from dotenv import dotenv_values
 from fastapi import APIRouter, Request, HTTPException
 from pydantic import BaseModel
 
-from ..jwt.Utils import JwtUtils
-from ..user.User import User
+from jwt_utils.Utils import JwtUtils
+from user.User import User
 
 # Crea un enrutador para el manejo de la autenticación
 LOGIN = APIRouter()

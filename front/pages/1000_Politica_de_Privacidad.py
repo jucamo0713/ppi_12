@@ -1,6 +1,5 @@
-from front.components.PrivacyPolicyComponent import \
-    privacy_policy_component
-from front.utils.BasicConfig import basic_config
+from components.PrivacyPolicyComponent import privacy_policy_component
+from utils.BasicConfig import basic_config
 
 # Configura la aplicación básica
 basic_config()

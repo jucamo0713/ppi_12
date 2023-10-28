@@ -10,5 +10,5 @@ def privacy_policy_component():
     """
     # Leer y mostrar el contenido del archivo 'PrivacyPolicy.html' de forma
     # segura.
-    st.markdown(open('./front/components/PrivacyPolicy.html').read(),
+    st.markdown(open('./components/PrivacyPolicy.html').read(),
                 unsafe_allow_html=True)

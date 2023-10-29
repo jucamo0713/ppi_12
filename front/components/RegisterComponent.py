@@ -61,7 +61,6 @@ def registrar(url: str):
         burn = datetime(st.session_state.burn_date.year,
                         st.session_state.burn_date.month,
                         st.session_state.burn_date.day).isoformat() + "Z"
-        print(burn)
         response = HttpUtils.post(f"{url}/auth/register", body={
             "name": st.session_state.name,
             "user": st.session_state.username,

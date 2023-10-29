@@ -116,3 +116,14 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
                             st.session_state.reading,
                             not st.session_state.favorite,
                         ])
+    # Sección para añadir comentarios
+    st.header("Añadir Comentario")
+    # Campo de entrada de texto para el comentario
+    user_comment = st.text_area("Escribe tu comentario:")
+    # Botón para enviar el comentario
+    if st.button("Enviar Comentario"):
+        if user_comment:
+            # Aquí puedes guardar el comentario en tu base de datos o sistema
+            st.success("Comentario enviado con éxito.")
+        else:
+            st.warning("Por favor, escribe un comentario antes de enviarlo.")

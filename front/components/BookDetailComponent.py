@@ -1,7 +1,12 @@
+# Importaciones de librerías de terceros
 import streamlit as st
+
+# Importaciones de módulos internos de la aplicación
 from utils.GetUrl import get_url
 from utils.GuardSession import guard_session
 from utils.HttpUtils import HttpUtils
+
+# TODO: documentar
 
 
 def buscar_libro_por_id(id: str, url: str):

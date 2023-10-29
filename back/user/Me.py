@@ -1,8 +1,11 @@
+# Importaciones de librerías de terceros
 from dotenv import dotenv_values
 from fastapi import APIRouter, Depends
 from fastapi.params import Header
 
+# Importaciones de módulos internos de la aplicación
 from jwt_utils.Guard import validate_token
+
 
 # Crear una instancia de APIRouter
 ME = APIRouter()

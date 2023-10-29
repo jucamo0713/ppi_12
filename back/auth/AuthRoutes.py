@@ -1,3 +1,4 @@
+# Importaciones de módulos internos de la aplicación
 from auth.Login import LOGIN
 from auth.Register import REGISTER
 

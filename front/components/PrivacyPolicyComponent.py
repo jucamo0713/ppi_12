@@ -1,3 +1,5 @@
+# Importaciones de librerías estándar de python
+import os
 # Importaciones de librerías de terceros
 import streamlit as st
 
@@ -11,5 +13,5 @@ def privacy_policy_component():
     """
     # Leer y mostrar el contenido del archivo 'PrivacyPolicy.html' de forma
     # segura.
-    st.markdown(open('./components/PrivacyPolicy.html').read(),
+    st.markdown(open(f'{os.path.dirname(__file__)}/PrivacyPolicy.html').read(),
                 unsafe_allow_html=True)

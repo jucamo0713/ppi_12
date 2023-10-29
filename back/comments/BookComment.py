@@ -1,6 +1,10 @@
+# Importaciones de librerías estándar de Python
 from datetime import datetime
+
+# Importaciones de librerías de terceros
 from bson import ObjectId
 from pydantic import BaseModel, Field
+
 
 
 class BookComment(BaseModel):

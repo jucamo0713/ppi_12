@@ -1,7 +1,13 @@
+# Importaciones de librerías estándar de Python
 from datetime import datetime, timedelta
-import jwt
+
+# Importaciones de librerías de terceros
 from dotenv import dotenv_values
 from fastapi import HTTPException
+
+# Importaciones de paquetes de la propia aplicación
+import jwt
+
 
 config = dotenv_values(".env")
 

@@ -1,9 +1,13 @@
+# Importaciones de librerías estándar de Python
 import hashlib
 import re
+
+# Importaciones de librerías de terceros
 from dotenv import dotenv_values
 from fastapi import APIRouter, Request, HTTPException
 from pydantic import BaseModel
 
+# Importaciones de módulos internos de la aplicación
 from jwt_utils.Utils import JwtUtils
 from user.User import User
 

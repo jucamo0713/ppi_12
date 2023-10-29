@@ -1,8 +1,13 @@
+# Importaciones de librerías estándar de Python
 import re
+
+# Importaciones de librerías de terceros
 from fastapi import APIRouter, Request
 
+# Importaciones de módulos internos de la aplicación
 from book.Book import Book
 from db.PaginatedSearch import paginated_search
+
 
 SEARCH_ALL_BOOKS = APIRouter()
 

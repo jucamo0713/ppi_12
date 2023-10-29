@@ -1,8 +1,14 @@
+# Importaciones de librerías estándar de Python
 from datetime import datetime
+
+# Importaciones de librerías de terceros
 from typing import Literal
 import streamlit as st
+
+# Importaciones de módulos internos de la aplicación
 from components.PrivacyPolicyComponent import privacy_policy_component
 from utils.HttpUtils import HttpUtils
+
 
 # Establece el rango mínimo para permitir años anteriores a 2013
 MIN_FECHA_NACIMIENTO = datetime(1900, 1, 1)

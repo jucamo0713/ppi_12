@@ -1,5 +1,7 @@
+# Importaciones de librerías de terceros
 import pandas as pd
 from fastapi import APIRouter, Request
+
 
 # Define una ruta para cargar el conjunto de datos de libros en la base de
 # datos.

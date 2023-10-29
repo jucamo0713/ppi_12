@@ -1,7 +1,9 @@
+# Importaciones de módulos internos de la aplicación
 from components.RegisterComponent import register_component
 from utils.BasicConfig import basic_config
 from utils.GetUrl import get_url
 from utils.GuardSession import guard_session
+
 
 # Obtener la URL de la API desde las secrets de Streamlit o desde el archivo
 # .env

@@ -1,10 +1,13 @@
+# Importaciones de librerías de terceros
 from fastapi import APIRouter, Request, Header
 from pydantic import BaseModel
 from bson import ObjectId
 from datetime import datetime
 
+# Importaciones de módulos internos de la aplicación
 from comments.BookComment import BookComment
 from jwt_utils.Guard import validate_token
+
 
 # Define un enrutador para los comentarios de libros
 CREATE_COMMENT = APIRouter()

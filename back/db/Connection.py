@@ -1,5 +1,7 @@
+# Importaciones de librerías de terceros
 from dotenv import dotenv_values
 from pymongo import MongoClient
+
 
 config = dotenv_values(".env")
 

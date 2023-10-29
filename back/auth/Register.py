@@ -1,11 +1,16 @@
+# Importaciones de librerías estándar de Python
 import hashlib
 import re
+from datetime import datetime
+
+# Importaciones de librerías de terceros
 from dotenv import dotenv_values
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, EmailStr
-from datetime import datetime
 
+# Importaciones de módulos internos de la aplicación
 from user.User import User
+
 
 REGISTER = APIRouter()
 

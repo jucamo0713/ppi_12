@@ -1,4 +1,7 @@
+# Importaciones de librerías de terceros
 from fastapi import FastAPI
+
+# Importaciones de módulos internos de la aplicación
 from book.BookRoutes import BookRoutes
 from auth.AuthRoutes import AuthRoutes
 from comments.BookCommentsRoutes import BOOK_COMMENTS_ROUTES
@@ -6,6 +9,7 @@ from datasets.DatasetsRoutes import DATASETS_ROUTES
 from db.Connection import Connection
 from user.UserRoutes import USER_ROUTES
 from user_book.UserBookRoutes import USER_BOOK_ROUTES
+
 
 # Crear una instancia de FastAPI
 app = FastAPI()

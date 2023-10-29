@@ -1,6 +1,10 @@
+# Importaciones de librerías de terceros
 from bson import ObjectId
 from fastapi import APIRouter, Request, HTTPException
+
+# Importaciones de módulos internos de la aplicación
 from book.Book import Book
+
 
 SEARCH_BOOK_BY_ID = APIRouter()
 

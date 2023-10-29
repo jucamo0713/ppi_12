@@ -1,9 +1,11 @@
+# Importaciones de librerías de terceros
 from bson import ObjectId
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.params import Header
 from pydantic import BaseModel, Field
 from pymongo import ReturnDocument
 
+# Importaciones de módulos internos de la aplicación
 from user_book.UserBook import UserBook
 from jwt_utils.Guard import validate_token
 

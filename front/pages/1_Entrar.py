@@ -36,9 +36,10 @@ def verificar_credenciales(usuario_input, contrasena_input):
         st.error(response.json()['detail'])
         return None
     else:
-        st.success("Inicio de sesión exitoso. ¡Bienvenido!")  # Muestra un
-        # mensaje de éxito
-        return response.json()["access_token"]  # Devuelve el token de acceso
+        # Muestra un mensaje de éxito
+        st.success("Inicio de sesión exitoso. ¡Bienvenido!")
+        # Devuelve el token de acceso
+        return response.json()["access_token"]
 
 
 # Estado de la aplicación
@@ -51,8 +52,8 @@ if "token" in st.session_state:
         "Authentication": f"Bearer {st.session_state.token}"})
     if 200 <= response.status_code < 300:
         is_authenticated = True
-        st.session_state.user = response.json()  # Almacena el perfil del
-        # usuario en el estado de la sesión
+        # Almacena el perfil del usuario en el estado de la sesión
+        st.session_state.user = response.json()
 
 # Logo en la esquina superior derecha
 st.markdown(
@@ -75,22 +76,23 @@ st.markdown(
 if not is_authenticated:
     # Si el usuario no está autenticado
     st.title("Inicia sesión en LitWave")
+    # Campo de entrada para el nombre de usuario
     usuario_input = st.text_input("Ingrese su nombre de usuario",
-                                  disabled=is_authenticated)  # Campo de
-    # entrada para el nombre de usuario
+                                  disabled=is_authenticated)
+    # Campo de entrada para la contraseña
     contrasena_input = st.text_input("Ingrese su contraseña",
                                      type="password",
-                                     disabled=is_authenticated)  # Campo de
-    # entrada para la contraseña
-    if st.button("Iniciar Sesión"):  # Botón para iniciar sesión
-        token = verificar_credenciales(usuario_input, contrasena_input)  #
+                                     disabled=is_authenticated)
+    # Botón para iniciar sesión
+    if st.button("Iniciar Sesión"):
+        token = verificar_credenciales(usuario_input, contrasena_input)
         # Verifica las credenciales
         if token:
-            st.session_state.token = token  # Almacena el token en el estado
-            # de la sesión
+            # Almacena el token en el estado de la sesión
+            st.session_state.token = token
             is_authenticated = True
-            st.experimental_rerun()  # Reinicia la aplicación para mostrar
-            # la página autenticada
+            # Reinicia la aplicación para mostrar la página autenticada
+            st.experimental_rerun()
 else:
-    st.write("Ya Iniciaste sesión")  # Muestra un mensaje si el usuario ya
-    # está autenticado
+    # Muestra un mensaje si el usuario ya está autenticado
+    st.success("Ya has iniciado sesión")

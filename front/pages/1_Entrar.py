@@ -30,7 +30,6 @@ def verificar_credenciales(usuario_input, contrasena_input):
 
     # Comprueba el código de estado de la respuesta
     if response.status_code < 200 or response.status_code >= 300:
-        print(response)
         # Muestra un error en caso de problemas
         st.error(response.json()['detail'])
         return None

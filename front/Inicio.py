@@ -18,7 +18,7 @@ url = get_url()
 value = basic_config(url=url)
 
 LIMIT = 15
-
+# TODO: comentar más
 
 # Función para volver a la lista de libros
 def volver():
@@ -85,7 +85,7 @@ if value:
                     "User-Agent": user_agent
                 })
                 if data_image.status_code == 200:
-                    # Se crea BytesIO object para que actue como un archivo
+                    # Se crea BytesIO object para que actúe como un archivo
                     # falso
                     img_file = BytesIO(data_image.content)
                     try:

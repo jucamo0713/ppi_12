@@ -11,7 +11,7 @@ from jwt_utils.Guard import validate_token
 
 # Define un enrutador para los comentarios de libros
 CREATE_COMMENT = APIRouter()
-
+# TODO: Documentar
 
 # Modelo de solicitud para crear un comentario de libro
 class CreateBookCommentRequest(BaseModel):

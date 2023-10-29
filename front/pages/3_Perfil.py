@@ -2,9 +2,9 @@
 import streamlit as st
 
 # Importaciones de módulos internos de la aplicación
-from components.ProfileComponent import profile_component
-from utils.BasicConfig import basic_config
-from utils.GuardSession import guard_session
+from front.components.ProfileComponent import profile_component
+from front.utils.BasicConfig import basic_config
+from front.utils.GuardSession import guard_session
 
 
 # Configura la aplicación básica

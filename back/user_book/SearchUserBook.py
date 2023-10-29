@@ -4,8 +4,8 @@ from fastapi import APIRouter, Request
 from fastapi.params import Header
 
 # Importaciones de módulos internos de la aplicación
-from user_book.UserBook import UserBook
-from jwt_utils.Guard import validate_token
+from back.user_book.UserBook import UserBook
+from back.jwt_utils.Guard import validate_token
 
 
 SEARCH_USER_BOOK = APIRouter()

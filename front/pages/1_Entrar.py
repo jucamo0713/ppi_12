@@ -3,7 +3,7 @@ import requests
 import streamlit as st
 
 # Importaciones de módulos internos de la aplicación
-from utils.GetUrl import get_url
+from front.utils.GetUrl import get_url
 
 
 # Obtener la URL de la API desde las secrets de Streamlit o el archivo .env

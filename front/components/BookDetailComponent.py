@@ -2,9 +2,9 @@
 import streamlit as st
 
 # Importaciones de módulos internos de la aplicación
-from utils.GetUrl import get_url
-from utils.GuardSession import guard_session
-from utils.HttpUtils import HttpUtils
+from front.utils.GetUrl import get_url
+from front.utils.GuardSession import guard_session
+from front.utils.HttpUtils import HttpUtils
 
 # TODO: documentar
 

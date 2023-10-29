@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, EmailStr
 
 # Importaciones de módulos internos de la aplicación
-from user.User import User
+from back.user.User import User
 
 
 REGISTER = APIRouter()

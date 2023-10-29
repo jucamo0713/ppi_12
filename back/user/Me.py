@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.params import Header
 
 # Importaciones de módulos internos de la aplicación
-from jwt_utils.Guard import validate_token
+from back.jwt_utils.Guard import validate_token
 
 
 # Crear una instancia de APIRouter

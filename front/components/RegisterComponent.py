@@ -6,8 +6,8 @@ from typing import Literal
 import streamlit as st
 
 # Importaciones de módulos internos de la aplicación
-from components.PrivacyPolicyComponent import privacy_policy_component
-from utils.HttpUtils import HttpUtils
+from front.components.PrivacyPolicyComponent import privacy_policy_component
+from front.utils.HttpUtils import HttpUtils
 
 
 # Establece el rango mínimo para permitir años anteriores a 2013

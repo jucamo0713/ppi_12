@@ -33,6 +33,7 @@ def profile_component():
             "Fecha de registro": usuario["registered_date"]
         }
         st.table(data)
+
         # Botón para cerrar sesión
         st.button("Cerrar Sesión", on_click=close_session)
         return True

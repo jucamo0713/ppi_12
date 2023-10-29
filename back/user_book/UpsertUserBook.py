@@ -6,8 +6,8 @@ from pydantic import BaseModel, Field
 from pymongo import ReturnDocument
 
 # Importaciones de módulos internos de la aplicación
-from user_book.UserBook import UserBook
-from jwt_utils.Guard import validate_token
+from back.user_book.UserBook import UserBook
+from back.jwt_utils.Guard import validate_token
 
 UPSERT_USER_BOOK = APIRouter()
 

@@ -8,8 +8,8 @@ from fastapi import APIRouter, Request, HTTPException
 from pydantic import BaseModel
 
 # Importaciones de módulos internos de la aplicación
-from jwt_utils.Utils import JwtUtils
-from user.User import User
+from back.jwt_utils.Utils import JwtUtils
+from back.user.User import User
 
 # Crea un enrutador para el manejo de la autenticación
 LOGIN = APIRouter()

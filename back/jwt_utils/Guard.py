@@ -1,7 +1,7 @@
 # Importaciones de librerías de terceros
 from fastapi import HTTPException
 
-from jwt_utils.Utils import JwtUtils
+from back.jwt_utils.Utils import JwtUtils
 
 
 

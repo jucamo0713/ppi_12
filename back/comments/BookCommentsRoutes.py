@@ -1,5 +1,5 @@
 # Importaciones de módulos internos de la aplicación
-from comments.CreateComment import CREATE_COMMENT
+from back.comments.CreateComment import CREATE_COMMENT
 
 
 # Definición de las rutas y controladores

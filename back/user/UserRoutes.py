@@ -1,5 +1,5 @@
 # Importaciones de módulos internos de la aplicación
-from user.Me import ME
+from back.user.Me import ME
 
 
 # Definición de las rutas y controladores

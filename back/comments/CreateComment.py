@@ -5,8 +5,8 @@ from bson import ObjectId
 from datetime import datetime
 
 # Importaciones de módulos internos de la aplicación
-from comments.BookComment import BookComment
-from jwt_utils.Guard import validate_token
+from back.comments.BookComment import BookComment
+from back.jwt_utils.Guard import validate_token
 
 
 # Define un enrutador para los comentarios de libros

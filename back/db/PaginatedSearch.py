@@ -1,4 +1,9 @@
-def paginated_search(query=None, sort=None, page=0, limit=0, project=None):
+def paginated_search(query: dict,
+                     sort: dict = None,
+                     page: float = 0,
+                     limit: int = 0,
+                     project: list[dict] = None,
+                     pre_query: list[dict] = None):
     """
     Función que construye una consulta de MongoDB para realizar una búsqueda
     paginada.
@@ -93,9 +98,11 @@ def paginated_search(query=None, sort=None, page=0, limit=0, project=None):
     # Agrega etapas para obtener información de paginación.
     metadata.append({'$count': 'total'})
     metadata.append({'$addFields': {'page': page}})
-    metadata.append({'$addFields': {'totalPages': {
+    metadata.append({'$addFields': {'total_pages': {
         '$ceil': {'$divide': ['$total', limit]}}} if limit else 0})
 
+    if pre_query is not None:
+        response += pre_query
     # Agrega la etapa de búsqueda al inicio de la consulta.
     response.append({'$match': query})
 

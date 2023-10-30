@@ -3,7 +3,6 @@ from bson import ObjectId
 from pydantic import BaseModel, Field
 
 
-
 class UserBook(BaseModel):
     """
     Modelo de datos para representar la relación entre un usuario y un libro.

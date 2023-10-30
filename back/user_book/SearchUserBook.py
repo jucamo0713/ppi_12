@@ -38,7 +38,6 @@ def search_user_book(request: Request, book_id: str,
     data = request.app.database['user_books'].find_one({'user_id': ObjectId(
         user_id), 'book_id': ObjectId(book_id)})
 
-    print(data)
     if data:
         response = UserBook(**data)
     else:

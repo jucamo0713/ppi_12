@@ -11,34 +11,60 @@ class BookComment(BaseModel):
     Modelo de datos para representar un comentario de libro.
 
     Atributos:
-    - id (str): Identificador único del comentario.
-    - user_id (str): Identificador único del usuario que realizó el comentario.
-    - book_id (str): Identificador único del libro al que se refiere el comentario.
-    - responded_to (str): Identificador único del comentario al que se responde.
+    - id (ObjectId): Identificador único del comentario.
+    - user_id (ObjectId): Identificador único del usuario que realizó el
+        comentario.
+    - book_id (ObjectId): Identificador único del libro al que se refiere el
+        comentario.
+    - responded_to (ObjectId | None): Identificador único del comentario al
+        que se responde (opcional).
     - content (str): Contenido del comentario.
+    - has_responses (bool): Booleano que indica si el comentario tiene
+        respuestas.
     - root (bool): Booleano que indica si es un comentario raíz.
-    - created_date (datetime): Fecha de creación del comentario en formato ISODate (AAAA-MM-DDTHH:MM:SS).
+    - created_date (datetime): Fecha de creación del comentario en formato
+        ISODate (AAAA-MM-DDTHH:MM:SS).
+    - username (str): El usuario que comentó (opcional).
 
     Args:
-        id (str): Identificador único del comentario.
-        user_id (str): Identificador único del usuario que realizó el comentario.
-        book_id (str): Identificador único del libro al que se refiere el comentario.
-        responded_to (str): Identificador único del comentario al que se responde (opcional).
+        id (ObjectId): Identificador único del comentario.
+        user_id (ObjectId): Identificador único del usuario que realizó el
+            comentario.
+        book_id (ObjectId): Identificador único del libro al que se refiere
+            el comentario.
+        responded_to (ObjectId | None): Identificador único del comentario
+            al que se responde (opcional).
         content (str): Contenido del comentario.
+        has_responses (bool): Booleano que indica si el comentario tiene
+            respuestas.
         root (bool): Booleano que indica si es un comentario raíz.
         created_date (datetime): Fecha de creación del comentario.
 
     """
     id: ObjectId = Field(default_factory=ObjectId, alias="_id")
-    user_id: ObjectId = Field(description="Identificador único del usuario que realizó el comentario.")
-    book_id: ObjectId = Field(description="Identificador único del libro al que se refiere el comentario.")
-    responded_to: ObjectId | None = Field(default=None,
-                                          description="Identificador único del "
-                                                      "comentario al que se responde (opcional).")
-    content: str = Field(description="Contenido del comentario.")
-    root: bool = Field(description="Booleano que indica si es un comentario raíz.")
-    created_date: datetime = Field(description="Fecha de creación del comentario en formato "
-                                               "ISODate (AAAA-MM-DDTHH:MM:SS).")
+    user_id: ObjectId = Field(
+        description="Identificador único del usuario que realizó el "
+                    "comentario.")
+    book_id: ObjectId = Field(
+        description="Identificador único del libro al que se refiere el "
+                    "comentario.")
+    responded_to: ObjectId | None = Field(
+        default=None,
+        description="Identificador único del comentario al que se responde ("
+                    "opcional).")
+    content: str = Field(..., description="Contenido del comentario.")
+    has_responses: bool = Field(
+        default=False,
+        description="Booleano que dice si el comentario tiene respuestas")
+    root: bool = Field(
+        ...,
+        description="Booleano que indica si es un comentario raíz.")
+    created_date: datetime = Field(
+        default=datetime.now(),
+        description="Fecha de creación del comentario en formato ISODate ("
+                    "AAAA-MM-DDTHH:MM:SS).")
+    username: str = Field(default=None,
+                          description="El usuario que comentó (opcional).")
 
     class Config:
         """
@@ -46,11 +72,14 @@ class BookComment(BaseModel):
 
         Atributos:
         - arbitrary_types_allowed (bool): Permite tipos de datos arbitrarios.
-        - json_encoders (dict): Diccionario de codificadores JSON personalizados.
+        - json_encoders (dict): Diccionario de codificadores JSON
+            personalizados.
 
         Args:
-            arbitrary_types_allowed (bool): Permite tipos de datos arbitrarios en el modelo.
-            json_encoders (dict): Diccionario de codificadores JSON personalizados.
+            arbitrary_types_allowed (bool): Permite tipos de datos
+                arbitrarios en el modelo.
+            json_encoders (dict): Diccionario de codificadores JSON
+                personalizados.
 
         """
         arbitrary_types_allowed = True

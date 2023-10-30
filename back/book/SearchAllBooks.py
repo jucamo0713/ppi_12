@@ -50,7 +50,7 @@ def list_books(request: Request, limit=15, page=1, search_param=''):
     response = books[0] if len(books) > 0 else {'data': [], 'metadata': {
         'total': 0,
         'page': 0,
-        'totalPages': 0,
+        'total_pages': 0,
     }}
     response['data'] = list(map(lambda x: Book(**x), response["data"]))
     return response

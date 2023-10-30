@@ -3,6 +3,7 @@ import streamlit as st
 from fake_useragent import UserAgent
 
 
+# TODO: documentar
 class HttpUtils:
 
     @classmethod

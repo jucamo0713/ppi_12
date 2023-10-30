@@ -6,7 +6,6 @@ from bson import ObjectId
 from pydantic import BaseModel, Field
 
 
-
 class BookComment(BaseModel):
     """
     Modelo de datos para representar un comentario de libro.

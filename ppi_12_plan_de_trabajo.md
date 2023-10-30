@@ -30,8 +30,9 @@
 ## 23/10/2023 -  30/10/2023  
 | Tarea |Descripción|Responsable | Estado |  
 |--|--|--|--|
-| Comentarios. | Vista y funcionalidad para ver y crear comentarios sobre un libro. |[Juan Camilo Montoya](https://github.com/jucamo0713) | Sin Empezar |
-| Mostrar lista de libros leídos. |Vista y funcionalidad donde se observe los libros registrados en el estado de leídos, leyendo y favoritos.| [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar |  
+| Comentarios. | Vista y funcionalidad para ver y crear comentarios sobre un libro. |[Juan Camilo Montoya](https://github.com/jucamo0713) | Listo |
+| Mostrar lista de libros leídos. |Vista y funcionalidad donde se observe los libros registrados en el estado de leídos, leyendo y favoritos.| [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo |  
+| Política de privacidad |Política que maneja la privacidad de los usuarios y el uso de sus datos.| [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo |  
 ## 30/10/2023 -  06/11/2023  
 | Tarea |Descripción| Responsable | Estado |  
 |--|--|--|--|

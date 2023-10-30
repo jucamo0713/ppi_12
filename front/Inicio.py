@@ -100,6 +100,9 @@ if value:
                 # Agrega un separador horizontal (línea) después de cada
                 # fila de 5 libros.
                 st.markdown("---")
+                # Crea un nuevo contenedor de 5 columnas para los libros
+                # para mantener una estructura uniforme
+                columnas = st.columns(5)
 
             # Alterna entre las 5 columnas para mostrar los libros en cada
             # columna.

@@ -11,6 +11,7 @@ from book.Book import Book
 from db.PaginatedSearch import paginated_search
 from jwt_utils.Guard import validate_token
 
+# Define un enrutador para listar los libros del usuario
 SEARCH_ALL_USER_BOOKS = APIRouter()
 
 
@@ -18,15 +19,41 @@ SEARCH_ALL_USER_BOOKS = APIRouter()
                            response_description="List all user books")
 def list_user_books(request: Request,
                     type_of_list: Literal['reading', 'favorite', 'read'],
-                    limit=15, page=1,
-                    search_param='',
+                    limit: int = 15,
+                    page: int = 1,
+                    search_param: str = '',
                     authentication: str = Header(...)):
-    # TODO: Documentar
+    """
+    Lista los libros del usuario según el tipo especificado (leyendo,
+    favorito, leído).
+
+    Args:
+        request (Request): La solicitud HTTP entrante.
+        type_of_list (Literal['reading', 'favorite', 'read']): El tipo de
+            lista de libros a mostrar.
+        limit (int, optional): El número máximo de libros por página (
+            predeterminado: 15).
+        page (int, optional): La página deseada (predeterminado: 1).
+        search_param (str, optional): Parámetro de búsqueda para título o
+            autor de libros (predeterminado: '').
+        authentication (str): Token de autenticación en la cabecera.
+
+    Returns:
+        dict: Un diccionario que contiene datos y metadatos de la respuesta.
+
+        - data (List[Book]): Una lista de objetos Book que representan los
+            libros encontrados-
+        - metadata (dict): Un diccionario con metadatos de paginación,
+            incluyendo total, página actual y total de páginas.
+    """
     # Validar el token de autenticación utilizando la función validate_token
     token_data = validate_token(authentication)
     user_id = token_data['id']
+
+    # Definir la consulta para la búsqueda con paginación y filtro
     query = paginated_search(
-        page=int(page), limit=int(limit),
+        page=int(page),
+        limit=int(limit),
         query={
             "$or": [
                 {'title': re.compile(f'{search_param}', re.IGNORECASE)},
@@ -62,9 +89,9 @@ def list_user_books(request: Request,
             }
         ]
     )
+
     # Realiza una búsqueda en la base de datos de libros utilizando paginación
-    books = list(request.app.database['user_books'].aggregate(
-        query))
+    books = list(request.app.database['user_books'].aggregate(query))
 
     # Si se encuentran libros, se crea una respuesta con los datos y metadatos
     response = books[0] if len(books) > 0 else {'data': [], 'metadata': {

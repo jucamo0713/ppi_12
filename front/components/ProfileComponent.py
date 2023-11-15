@@ -1,7 +1,11 @@
 import streamlit as st
+
 from components.BookCard import book_card
 from utils.GetUrl import get_url
 from utils.HttpUtils import HttpUtils
+
+import matplotlib.pyplot as plt
+from collections import Counter
 
 
 def close_session():
@@ -78,8 +82,8 @@ def profile_component():
         read, reading, favorite = st.tabs(my_books_tabs)
         with read:
             read_books = \
-                search_user_books(url, "read", 5, 1, st.session_state.token)[
-                    "data"]
+                search_user_books(url, "read", 5, 1,
+                                  st.session_state.token)["data"]
             read_columns = st.columns(5)
             for index, data in enumerate(read_books):
                 with read_columns[index]:
@@ -102,6 +106,61 @@ def profile_component():
             for index, data in enumerate(favorite_books):
                 with favorite_columns[index]:
                     book_card(data, "favorites")
+
+        # Estadísticos de lectura
+        st.title("Mis estadísticos de lectura")
+
+        # Obtener los datos de libros leídos, favoritos y en progreso
+        conteo_leidos = Counter([libro["title"] for libro in read_books])
+        conteo_favs = Counter([libro["title"] for libro in favorite_books])
+        conteo_progreso = Counter([libro["title"] for libro in reading_books])
+
+        # Obtener la cantidad total de libros en cada categoría
+        total_leidos = sum(conteo_leidos.values())
+        total_favoritos = sum(conteo_favs.values())
+        total_progreso = sum(conteo_progreso.values())
+
+        # Crear un gráfico de torta
+        fig, ax = plt.subplots()
+
+        # Datos para el gráfico de torta
+        datos_torta = [total_leidos, total_favoritos, total_progreso]
+        etiquetas = [f'Leídos\n({total_leidos} libros)',
+                     f'Favoritos\n({total_favoritos} libros)',
+                     f'En Progreso\n({total_progreso} libros)']
+
+        # Crear el gráfico de torta
+        ax.pie(datos_torta, labels=etiquetas, autopct='%1.1f%%', startangle=90,
+               counterclock=False)
+
+        # Equal aspect ratio asegura que el gráfico de torta sea circular.
+        ax.axis('equal')
+        ax.set_title('Distribución de Libros por Categoría')
+
+        # Mostrar el gráfico en Streamlit
+        st.pyplot(fig)
+
+        # Contar la frecuencia de cada autor
+        conteo_autores_leidos = Counter([libro["author"] for libro in
+                                         read_books])
+        # Obtener los 5 autores más leídos
+        top_autores = conteo_autores_leidos.most_common(5)
+
+        # Crear un gráfico de barras
+        fig, ax = plt.subplots()
+        ax.bar([autor[0] for autor in top_autores],
+               [autor[1] for autor in top_autores])
+        ax.set_xlabel('Autores')
+        ax.set_ylabel('Número de Libros')
+        ax.set_title('Top 5 Autores Más Leídos')
+
+        # Establecer el formato de los ticks del eje y para asegurar números
+        # enteros
+        ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+
+        # Mostrar el gráfico en Streamlit
+        st.pyplot(fig)
+
         return True
     else:
         return False

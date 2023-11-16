@@ -7,7 +7,7 @@ import streamlit as st
 
 # Importaciones de módulos internos de la aplicación
 from components.PrivacyPolicyComponent import privacy_policy_component
-from components.TermsConditionsComponet import terms_conditions_component
+from components.TermsConditionsComponent import terms_conditions_component
 from utils.HttpUtils import HttpUtils
 
 

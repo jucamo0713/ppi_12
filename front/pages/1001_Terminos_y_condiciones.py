@@ -1,5 +1,5 @@
 # Importaciones de módulos internos de la aplicación
-from components.TermsConditionsComponet import terms_conditions_component
+from components.TermsConditionsComponent import terms_conditions_component
 from utils.BasicConfig import basic_config
 
 

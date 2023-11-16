@@ -144,7 +144,7 @@ def buscar_detalle_de_libro_por_usuario(token: str, book_id: str, url: str):
 
 
 def guardar_detalle_libro(url: str, book_id: str, token: str, read: bool,
-                          in_process: bool, favorites: bool):
+                          in_process: bool, favorites: bool, rating: int):
     """
     Guarda los detalles de un libro para un usuario en la API.
 
@@ -155,15 +155,16 @@ def guardar_detalle_libro(url: str, book_id: str, token: str, read: bool,
         read (bool): Indica si el libro ha sido leído.
         in_process (bool): Indica si el libro está en proceso de lectura.
         favorites (bool): Indica si el libro está marcado como favorito.
+        rating (int): Calificación del libro.
 
     Ejemplo:
     >>> guardar_detalle_libro('https://api.com', 'book123', 'token123',
-    True, False, True)
+    True, False, True, 4)
     """
     HttpUtils.put(f'{url}/user_book/upsert', query={"book_id": book_id},
                   headers={"Authentication": f"Bearer {token}"},
                   body={"read": read, "reading": in_process,
-                        "favorite": favorites})
+                        "favorite": favorites, "rating": rating})
 
 
 def book_detail_component(book_id: str, book: dict = None, url: str = None):
@@ -234,6 +235,27 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
                               st.session_state.reading,
                               not st.session_state.favorite])
 
+    # Calificaciones
+    if data["is_authenticated"]:
+        st.header("Calificación")
+        st.caption("Seleccione una calificación:")
+
+        # Widget de calificación con estrellas
+        rating = st.slider("Calificación", 0, 5, key="rating",
+                           value=st.session_state.get('rating', 0),
+                           label_visibility="hidden",
+                           format="%d estrellas", step=1,
+                           help="Haz clic para calificar el libro.")
+
+        # Guardar la calificación solo cuando el usuario cambie el valor
+        if st.session_state.rating != rating:
+            st.session_state.rating = rating
+            guardar_detalle_libro(url, book_id, data["token"],
+                                  st.session_state.read,
+                                  st.session_state.reading,
+                                  st.session_state.favorite,
+                                  rating)
+    # Comentarios
     st.header("Comentarios")
     if data["is_authenticated"]:
         st.text_area("Escribe tu comentario:",

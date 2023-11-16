@@ -7,6 +7,7 @@ import streamlit as st
 
 # Importaciones de módulos internos de la aplicación
 from components.PrivacyPolicyComponent import privacy_policy_component
+from components.TermsConditionsComponet import terms_conditions_component
 from utils.HttpUtils import HttpUtils
 
 
@@ -124,6 +125,7 @@ def register_component(url: str):
                                    default=st.session_state.to_dict()))
     # Verifica si se está mostrando los términos y condiciones
     elif 'show_terms' in st.session_state and st.session_state.show_terms:
+        terms_conditions_component()
         st.button('Salir',
                   on_click=exciter('read_terms', st.session_state.to_dict()))
     else:

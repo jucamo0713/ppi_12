@@ -62,9 +62,13 @@ class UserBook(BaseModel):
         ...,
         description="Indica si el libro es uno de los favoritos del usuario."
     )
-    read: bool = Field(
+    read: int = Field(
         ...,
-        description="Indica si el usuario ha leído el libro."
+        description="Indica cuantas veces se a leído el usuario el libro."
+    )
+    rating: float = Field(
+        None,
+        description="Indica la valoración que el usuario le da al libro"
     )
 
     class Config:

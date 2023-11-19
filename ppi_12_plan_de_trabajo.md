@@ -55,7 +55,7 @@
 | Tarea                      | Descripción                                                                                                                                                                                                                  | Responsable                                           | Estado      |  
 |----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|-------------|
 | Recomendaciones de libros. | Sistema donde se recomienden libros al usuario según distintos patrones reconocidos mediante el uso de la librería **NetworkX**                                                                                              | [Juan Camilo Montoya](https://github.com/jucamo0713)  | Sin Empezar | 
-| Estadísticos de lectura.   | Vista y funcionalidad donde se muestren gráficos y estadísticos de lectura del usuario mediante el uso de las librerías **Numpy** para el cálculo de los mismos y **Matplotlib** para mostrarlos en el formato más adecuado. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Iniciado    |   
+| Estadísticos de lectura.   | Vista y funcionalidad donde se muestren gráficos y estadísticos de lectura del usuario mediante el uso de las librerías **Numpy** para el cálculo de los mismos y **Matplotlib** para mostrarlos en el formato más adecuado. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Terminado   |   
 
 ## 13/11/2023 - 20/11/2023
 

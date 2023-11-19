@@ -51,7 +51,13 @@ def list_user_books(request: Request,
     if user_id is None:
         token_data = validate_token(authentication)
         user_id = token_data['id']
-
+    match = {
+        type_of_list: True,
+        'user_id': ObjectId(user_id)
+    } if type_of_list != 'read' else {
+        type_of_list: {'$gte': 1},
+        'user_id': ObjectId(user_id)
+    }
     # Definir la consulta para la búsqueda con paginación y filtro
     query = paginated_search(
         page=int(page),
@@ -64,10 +70,7 @@ def list_user_books(request: Request,
         },
         pre_query=[
             {
-                '$match': {
-                    type_of_list: True,
-                    'user_id': ObjectId(user_id)
-                }
+                '$match': match
             }, {
                 '$lookup': {
                     'from': 'books',

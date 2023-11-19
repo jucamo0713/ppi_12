@@ -1,3 +1,5 @@
+import textwrap
+
 import streamlit as st
 
 from components.BookCard import book_card
@@ -51,6 +53,17 @@ def search_user_books(url: str, type_list: str, limit: int, page: int,
         return response['data']
     else:
         return []
+
+
+def search_statistics(url: str, user_id: str = None, user_token: str = None):
+    response = HttpUtils.get(f'{url}/user_book/statistics',
+                             query={
+                                 "user_id": user_id},
+                             authorization=user_token)
+    if response['success']:
+        return response['data']
+    else:
+        return None
 
 
 def search_user_data(url: str, user_id: str):
@@ -132,22 +145,19 @@ def profile_component(user_id: str = None):
 
     # Estadísticos de lectura
     st.title("Mis estadísticos de lectura")
-
-    # Obtener los datos de libros leídos, favoritos y en progreso
-    conteo_leidos = Counter([libro["title"] for libro in read_books])
-    conteo_favs = Counter([libro["title"] for libro in favorite_books])
-    conteo_progreso = Counter([libro["title"] for libro in reading_books])
-
-    # Obtener la cantidad total de libros en cada categoría
-    total_leidos = sum(conteo_leidos.values())
-    total_favoritos = sum(conteo_favs.values())
-    total_progreso = sum(conteo_progreso.values())
+    estadisticos = search_statistics(url, user_id, token)
 
     # Crear un gráfico de torta
     fig, ax = plt.subplots()
 
+    total_leidos = estadisticos["distribution"]["reads"]
+    total_favoritos = estadisticos["distribution"]["reading"]
+    total_progreso = estadisticos["distribution"]["favorite"]
     # Datos para el gráfico de torta
-    datos_torta = [total_leidos, total_favoritos, total_progreso]
+    datos_torta = [total_leidos,
+                   total_favoritos,
+                   total_progreso,
+                   ]
     etiquetas = [f'Leídos\n({total_leidos} libros)',
                  f'Favoritos\n({total_favoritos} libros)',
                  f'En Progreso\n({total_progreso} libros)']
@@ -163,23 +173,31 @@ def profile_component(user_id: str = None):
     # Mostrar el gráfico en Streamlit
     st.pyplot(fig)
 
-    # Contar la frecuencia de cada autor
-    conteo_autores_leidos = Counter([libro["author"] for libro in
-                                     read_books])
-    # Obtener los 5 autores más leídos
-    top_autores = conteo_autores_leidos.most_common(5)
-
     # Crear un gráfico de barras
     fig, ax = plt.subplots()
-    ax.bar([autor[0] for autor in top_autores],
-           [autor[1] for autor in top_autores])
+    ax.bar(estadisticos["top_authors"]["authors"],
+           estadisticos["top_authors"]["counts"])
     ax.set_xlabel('Autores')
     ax.set_ylabel('Número de Libros')
     ax.set_title('Top 5 Autores Más Leídos')
-
+    plt.xticks(rotation=-15)
     # Establecer el formato de los ticks del eje y para asegurar números
     # enteros
     ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
 
+    # Mostrar el gráfico en Streamlit
+    st.pyplot(fig)
+
+    # Crear un gráfico de barras
+    fig, ax = plt.subplots()
+    ax.barh([textwrap.shorten(x, 25) for x in estadisticos["top_more_reads"][
+        "books"]],
+            estadisticos["top_more_reads"]["read_values"])
+    ax.set_ylabel('Libros')
+    ax.set_xlabel('Número de Lecturas')
+    ax.set_title('Top Libros mas veces leído')
+    # Establecer el formato de los ticks del eje y para asegurar números
+    # enteros
+    ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
     # Mostrar el gráfico en Streamlit
     st.pyplot(fig)

@@ -1,4 +1,5 @@
 # Importaciones de librerías Nativas
+import math
 from datetime import datetime
 
 # Importaciones de librerías de terceros
@@ -194,7 +195,7 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
             "Titulo": book['title'],
             "Autor": book['author'],
             "Portada": book['image'],
-            "Calificación": book['rating'],
+            "Calificación": round(book['rating'], 2),
             "Total Calificaciones": book['total_ratings'], }
     st.table(data)
     st.markdown("---")

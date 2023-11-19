@@ -15,6 +15,7 @@ ua = UserAgent()
 # Constantes con letras mayúsculas
 MAX_SIZE_TEXT = 30
 
+
 # Definición de la función book_card
 def book_card(book, key: str = None):
     """
@@ -100,4 +101,5 @@ def book_card(book, key: str = None):
     st.button('Detalle',
               key=book["_id"] if key is None else key + book["_id"],
               on_click=(lambda x: st.experimental_set_query_params(
-                  book_id=x)), args=[book["_id"]])
+                  book_id=x)),
+              args=[book["_id"]])

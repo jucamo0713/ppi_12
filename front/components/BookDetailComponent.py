@@ -1,12 +1,14 @@
-# Importaciones de librerías de terceros
+# Importaciones de librerías Nativas
 from datetime import datetime
 
+# Importaciones de librerías de terceros
 import streamlit as st
 
 # Importaciones de módulos internos de la aplicación
 from utils.GetUrl import get_url
 from utils.GuardSession import guard_session
 from utils.HttpUtils import HttpUtils
+from components.ProfileComponent import profile_component
 
 DEFAULT_COMMENTS_LIMIT = 5
 
@@ -143,8 +145,7 @@ def buscar_detalle_de_libro_por_usuario(token: str, book_id: str, url: str):
         return response["data"]
 
 
-def guardar_detalle_libro(url: str, book_id: str, token: str, read: bool,
-                          in_process: bool, favorites: bool, rating: int):
+def guardar_detalle_libro(url: str, book_id: str, token: str):
     """
     Guarda los detalles de un libro para un usuario en la API.
 
@@ -152,19 +153,22 @@ def guardar_detalle_libro(url: str, book_id: str, token: str, read: bool,
         url (str): URL de la API.
         book_id (str): ID del libro.
         token (str): Token de autenticación del usuario.
-        read (bool): Indica si el libro ha sido leído.
+        read (int): Indica cuantas veces se a leido el libro.
         in_process (bool): Indica si el libro está en proceso de lectura.
         favorites (bool): Indica si el libro está marcado como favorito.
         rating (int): Calificación del libro.
 
     Ejemplo:
     >>> guardar_detalle_libro('https://api.com', 'book123', 'token123',
-    True, False, True, 4)
+    >>> True, False, True, 4)
     """
+
     HttpUtils.put(f'{url}/user_book/upsert', query={"book_id": book_id},
                   headers={"Authentication": f"Bearer {token}"},
-                  body={"read": read, "reading": in_process,
-                        "favorite": favorites, "rating": rating})
+                  body={"read": st.session_state.get("read"),
+                        "reading": st.session_state.get("reading"),
+                        "favorite": st.session_state.get("favorite"),
+                        "rating": st.session_state.get("rating")})
 
 
 def book_detail_component(book_id: str, book: dict = None, url: str = None):
@@ -189,7 +193,9 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
     data = {"Código ISBN": book['isbn_code'],
             "Titulo": book['title'],
             "Autor": book['author'],
-            "Portada": book['image']}
+            "Portada": book['image'],
+            "Calificación": book['rating'],
+            "Total Calificaciones": book['total_ratings'], }
     st.table(data)
     st.markdown("---")
     data = guard_session()
@@ -203,58 +209,45 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
             st.session_state.reading = libro_detalle['reading']
         if "favorite" not in st.session_state:
             st.session_state.favorite = libro_detalle['favorite']
+        if "rating" not in st.session_state:
+            st.session_state.rating = libro_detalle['rating'] if (
+                    libro_detalle['rating'] is not None) else 0
 
         columns = st.columns(3)
         with columns[0]:
-            st.checkbox("Leído",
-                        value=st.session_state.read,
-                        key="read",
-                        on_change=guardar_detalle_libro,
-                        args=[url, book_id, data["token"],
-                              not st.session_state.read,
-                              st.session_state.reading,
-                              st.session_state.favorite])
+            st.number_input("\\# de veces leído",
+                            value=st.session_state.read,
+                            key="read",
+                            on_change=guardar_detalle_libro,
+                            min_value=0,
+                            step=1,
+                            args=[url, book_id, data["token"]])
 
         with columns[1]:
             st.checkbox("En proceso de Lectura",
                         value=st.session_state.reading,
                         key="reading",
                         on_change=guardar_detalle_libro,
-                        args=[url, book_id, data["token"],
-                              st.session_state.read,
-                              not st.session_state.reading,
-                              st.session_state.favorite])
+                        args=[url, book_id, data["token"]])
 
         with columns[2]:
             st.checkbox("Favoritos",
                         value=st.session_state.favorite,
                         key="favorite",
                         on_change=guardar_detalle_libro,
-                        args=[url, book_id, data["token"],
-                              st.session_state.read,
-                              st.session_state.reading,
-                              not st.session_state.favorite])
+                        args=[url, book_id, data["token"]])
+        if st.session_state.read > 0:
+            st.header("Calificación")
+            st.caption("Seleccione una calificación:")
 
-    # Calificaciones
-    if data["is_authenticated"]:
-        st.header("Calificación")
-        st.caption("Seleccione una calificación:")
-
-        # Widget de calificación con estrellas
-        rating = st.slider("Calificación", 0, 5, key="rating",
-                           value=st.session_state.get('rating', 0),
-                           label_visibility="hidden",
-                           format="%d estrellas", step=1,
-                           help="Haz clic para calificar el libro.")
-
-        # Guardar la calificación solo cuando el usuario cambie el valor
-        if st.session_state.rating != rating:
-            st.session_state.rating = rating
-            guardar_detalle_libro(url, book_id, data["token"],
-                                  st.session_state.read,
-                                  st.session_state.reading,
-                                  st.session_state.favorite,
-                                  rating)
+            # Widget de calificación con estrellas
+            st.slider("Calificación", 0., 5., key="rating",
+                      value=float(st.session_state.rating),
+                      on_change=guardar_detalle_libro,
+                      label_visibility="hidden",
+                      format="%f estrellas", step=0.5,
+                      help="Haz clic para calificar el libro.",
+                      args=[url, book_id, data["token"]])
     # Comentarios
     st.header("Comentarios")
     if data["is_authenticated"]:
@@ -283,17 +276,25 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
         fecha = datetime.fromisoformat(comment['created_date']).strftime(
             '%Y-%m-%d %H:%M')
         with ((st.expander(f"**{comment['username']}** - *{fecha}*"))):
+            user_id = comment['user_id']
+            comment_id = comment['_id']
+            st.button("Ver Perfil",
+                      key=f'Ver Perfil${comment_id}',
+                      on_click=(lambda x: st.experimental_set_query_params(
+                          **st.experimental_get_query_params(),
+                          user_id=x)),
+                      args=[user_id])
             st.write(comment['content'])
             if comment['has_responses']:
-                if f'limit_{comment["_id"]}_comments' not in st.session_state:
+                if f'limit_{comment_id}_comments' not in st.session_state:
                     st.session_state[
-                        f'limit_{comment["_id"]}_comments'] = (
+                        f'limit_{comment_id}_comments'] = (
                         DEFAULT_COMMENTS_LIMIT)
                 sub_response = buscar_comentarios(
                     url,
                     limit=st.session_state[f'limit_'
-                                           f'{comment["_id"]}_comments'],
-                    reply_to=comment["_id"], book_id=book_id)
+                                           f'{comment_id}_comments'],
+                    reply_to=comment_id, book_id=book_id)
                 comment_responses = sub_response['data']
                 for res in comment_responses:
                     fecha_res = datetime.fromisoformat(
@@ -301,15 +302,21 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
                         '%Y-%m-%d %H:%M')
                     st.markdown(f"- **{res['username']}** - *{fecha_res}*:"
                                 f" {res['content']}")
+                    st.button("Ver Perfil",
+                              key=f'Ver Perfil${res["_id"]}',
+                              on_click=(
+                                  lambda x: st.experimental_set_query_params(
+                                      **st.experimental_get_query_params(),
+                                      user_id=x)),
+                              args=[res["user_id"]])
                 menos, mas = st.columns(2)
                 with menos:
-                    if (st.session_state[f'limit_{comment["_id"]}_comments']
+                    if (st.session_state[f'limit_{comment_id}_comments']
                             > DEFAULT_COMMENTS_LIMIT):
                         st.button("Ver menos",
                                   on_click=increment_comments_limit,
                                   use_container_width=True,
-                                  args=[-DEFAULT_COMMENTS_LIMIT, comment[
-                                      "_id"]])
+                                  args=[-DEFAULT_COMMENTS_LIMIT, comment_id])
                 with mas:
                     if sub_response['metadata']['total_pages'] > 1:
                         st.button("Ver mas",
@@ -320,37 +327,37 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
                                   )
                 # Agregar botón de respuesta para cada comentario raíz
             if data["is_authenticated"]:
-                if f'respond_area_{comment["_id"]}' not in st.session_state:
-                    st.session_state[f'respond_area_{comment["_id"]}'] = ''
+                if f'respond_area_{comment_id}' not in st.session_state:
+                    st.session_state[f'respond_area_{comment_id}'] = ''
                 st.text_area(f"Responder a {comment['username']}",
-                             key=f'respond_area_{comment["_id"]}',
+                             key=f'respond_area_{comment_id}',
                              value=st.session_state[f'respond_area_'
-                                                    f'{comment["_id"]}'])
+                                                    f'{comment_id}'])
                 st.button(
                     "Responder",
-                    key=f'comment_button_{comment["_id"]}',
+                    key=f'comment_button_{comment_id}',
                     on_click=crear_comentario,
-                    disabled=(f'respond_area_{comment["_id"]}' not in
+                    disabled=(f'respond_area_{comment_id}' not in
                               st.session_state or
                               st.session_state[
-                                  f'respond_area_{comment["_id"]}'] == ''),
+                                  f'respond_area_{comment_id}'] == ''),
                     args=[
                         url,
                         data['token'],
                         book_id,
-                        st.session_state[f'respond_area_{comment["_id"]}'],
-                        comment["_id"]
+                        st.session_state[f'respond_area_{comment_id}'],
+                        comment_id
                     ])
-                if f'{comment["_id"]}_comment_error' in st.session_state:
+                if f'{comment_id}_comment_error' in st.session_state:
                     st.warning(st.session_state[
-                                   f'{comment["_id"]}_comment_error'])
+                                   f'{comment_id}_comment_error'])
                     del st.session_state[
-                        f'{comment["_id"]}_comment_error']
-                if f'{comment["_id"]}_comment_success' in st.session_state:
+                        f'{comment_id}_comment_error']
+                if f'{comment_id}_comment_success' in st.session_state:
                     st.success(st.session_state[
-                                   f'{comment["_id"]}_comment_success'])
+                                   f'{comment_id}_comment_success'])
                     del st.session_state[
-                        f'{comment["_id"]}_comment_success']
+                        f'{comment_id}_comment_success']
     menos, mas = st.columns(2)
     with menos:
         if st.session_state.limit_main_comments > DEFAULT_COMMENTS_LIMIT:

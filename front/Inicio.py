@@ -6,6 +6,7 @@ from fake_useragent import UserAgent
 # Importaciones de módulos internos de la aplicación
 from components.BookCard import book_card
 from components.BookDetailComponent import book_detail_component
+from components.ProfileComponent import profile_component
 from utils.BasicConfig import basic_config
 from utils.GetUrl import get_url
 
@@ -23,12 +24,15 @@ LIMIT = 15
 
 
 # Función para volver a la lista de libros
-def volver():
+def volver(value: str):
     """
-    Función que permite volver del detalle al listado.
+    Función que permite volver.
     """
-    del st.experimental_get_query_params()['book_id']
-    st.experimental_set_query_params()
+    params = {
+        **st.experimental_get_query_params()
+    }
+    del params[value]
+    st.experimental_set_query_params(**params)
 
 
 # Función para reiniciar los parámetros de paginación
@@ -40,19 +44,23 @@ def restart_pagination_params():
 # configuración básica fue exitosa.
 if value:
 
+    if 'user_id' in st.experimental_get_query_params():
+        st.button('Volver', key='volver', on_click=volver, args=['user_id'])
+        profile_component(st.experimental_get_query_params()['user_id'][0])
+        st.button('Volver', key='volver2', on_click=volver, args=['user_id'])
     # Verificar si se proporciona 'book_id' en la URL
-    if "book_id" in st.experimental_get_query_params():
+    elif "book_id" in st.experimental_get_query_params():
 
         # Muestra un botón "Volver" que llama a la función 'volver' cuando
         # se hace clic.
-        st.button('Volver', key='volver', on_click=volver)
+        st.button('Volver', key='volver', on_click=volver, args=['book_id'])
 
         # Llama al componente 'book_detail_component' con el valor de
         # 'book_id' y la URL.
         book_detail_component(st.experimental_get_query_params()["book_id"][0],
                               url=url)
         # Muestra otro botón "Volver" para proporcionar otra forma de regresar.
-        st.button('Volver', key='volver2', on_click=volver)
+        st.button('Volver', key='volver2', on_click=volver, args=['book_id'])
 
     else:
         # Si 'book_id' no está en la URL, muestra la lista de libros.

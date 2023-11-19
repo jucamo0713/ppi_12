@@ -22,7 +22,8 @@ def list_user_books(request: Request,
                     limit: int = 15,
                     page: int = 1,
                     search_param: str = '',
-                    authentication: str = Header(...)):
+                    user_id: str = None,
+                    authentication: str = Header(None)):
     """
     Lista los libros del usuario según el tipo especificado (leyendo,
     favorito, leído).
@@ -47,8 +48,9 @@ def list_user_books(request: Request,
             incluyendo total, página actual y total de páginas.
     """
     # Validar el token de autenticación utilizando la función validate_token
-    token_data = validate_token(authentication)
-    user_id = token_data['id']
+    if user_id is None:
+        token_data = validate_token(authentication)
+        user_id = token_data['id']
 
     # Definir la consulta para la búsqueda con paginación y filtro
     query = paginated_search(

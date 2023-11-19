@@ -5,6 +5,7 @@ from fastapi.params import Header
 from pydantic import BaseModel, Field
 from pymongo import ReturnDocument
 
+from book.Book import Book
 # Importaciones de módulos internos de la aplicación
 from user_book.UserBook import UserBook
 from jwt_utils.Guard import validate_token
@@ -25,7 +26,8 @@ class UpsertUserBookRequest(BaseModel):
     """
     reading: bool = Field(...)
     favorite: bool = Field(...)
-    read: bool = Field(...)
+    read: int = Field(...)
+    rating: float = Field(...)
 
 
 @UPSERT_USER_BOOK.put("/upsert")
@@ -51,6 +53,47 @@ def upsert_user_book(request: Request, book_id: str,
     # Validar el token de autenticación utilizando la función validate_token
     token_data = validate_token(authentication)
     user_id = token_data['id']
+    rating = body.rating if body.read > 0 else None
+
+    before_data = request.app.database['user_books'].find_one({
+        'user_id': ObjectId(user_id),
+        'book_id': ObjectId(book_id)
+    })
+    book = request.app.database['books'].find_one({
+        '_id': ObjectId(book_id)
+    })
+    book = Book(**book)
+    if before_data:
+        before_data = UserBook(**before_data)
+        if rating is not None:
+            if before_data.rating is None:
+                request.app.database['books'].find_one_and_update({
+                    '_id': ObjectId(book_id)
+                }, {"$inc": {"total_ratings": 1},
+                    "$set": {
+                        "rating": ((book.rating * book.total_ratings)
+                                   + rating) / (book.total_ratings + 1)
+                    }})
+            elif before_data.rating != rating:
+                request.app.database['books'].find_one_and_update({
+                    '_id': ObjectId(book_id)
+                }, {
+                    "$set": {
+                        "rating": ((book.rating * book.total_ratings)
+                                   + (rating - before_data.rating)) / (
+                                      book.total_ratings)
+                    }})
+        elif before_data.rating is not None:
+            request.app.database['books'].find_one_and_update({
+                '_id': ObjectId(book_id)
+            }, {"$inc": {"total_ratings": -1},
+                "$set": {
+                    "rating": ((book.rating * book.total_ratings)
+                               - before_data.rating) / (
+                                      book.total_ratings - 1)
+                } if book.total_ratings - 1 > 0 else {},
+                "$unset": {} if book.total_ratings - 1 > 0 else {
+                    "rating": True}})
 
     # Actualizar la relación usuario-libro en la base de datos
     data = request.app.database['user_books'].find_one_and_update({
@@ -62,7 +105,8 @@ def upsert_user_book(request: Request, book_id: str,
         "reading": body.reading,
         "favorite": body.favorite,
         "read": body.read,
-    }},
+        **({"rating": rating} if rating is not None else {})
+    }, "$unset": {"rating": True} if rating is None else {}},
         upsert=True,
         return_document=ReturnDocument.AFTER)
 

@@ -8,12 +8,16 @@ from utils.BasicConfig import basic_config
 from utils.GuardSession import guard_session
 
 
-def volver():
+# Función para volver a la lista de libros
+def volver(key: str):
     """
-    Función que permite volver del detalle al perfil.
+    Función que permite volver.
     """
-    del st.experimental_get_query_params()['book_id']
-    st.experimental_set_query_params()
+    params = {
+        **st.experimental_get_query_params()
+    }
+    del params[key]
+    st.experimental_set_query_params(**params)
 
 
 # Configura la aplicación básica
@@ -34,11 +38,21 @@ if value:
 
     elif data["is_authenticated"]:
         # Verificar si se proporciona 'book_id' en la URL
-        if "book_id" in st.experimental_get_query_params():
-            st.button('Volver', key='volver', on_click=volver)
+
+        if "user_id" in st.experimental_get_query_params():
+            st.button('Volver', key='volver', on_click=volver,
+                      args=["user_id"])
+            profile_component(
+                st.experimental_get_query_params()["user_id"][0])
+            st.button('Volver', key='volver2', on_click=volver,
+                      args=["user_id"])
+        elif "book_id" in st.experimental_get_query_params():
+            st.button('Volver', key='volver', on_click=volver,
+                      args=["book_id"])
             book_detail_component(
                 st.experimental_get_query_params()["book_id"][0])
-            st.button('Volver', key='volver2', on_click=volver)
+            st.button('Volver', key='volver2', on_click=volver,
+                      args=["book_id"])
         else:
             # Muestra el componente del perfil del usuario
             profile_component()

@@ -39,6 +39,9 @@ class Book(BaseModel):
     title: str = Field(..., description="Título del libro.")
     author: str = Field(..., description="Autor del libro.")
     image: str = Field(..., description="URL de la imagen del libro.")
+    rating: float = Field(0, description="Calificación promedio del libro")
+    total_ratings: int = Field(0, description="Total de personas que han "
+                                              "calificado el libro")
 
     class Config:
         """

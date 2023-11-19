@@ -6,6 +6,7 @@ from components.ListUsersComponent import list_users_component
 from components.ProfileComponent import profile_component
 from utils.BasicConfig import basic_config
 from utils.GetUrl import get_url
+from utils.GuardSession import guard_session
 from utils.HttpUtils import HttpUtils
 from components.BookDetailComponent import book_detail_component
 
@@ -46,23 +47,25 @@ def search_users(url: str, page: int, limit: int, busqueda: str = '') -> dict:
 value = basic_config(url)
 
 if value:
-    # Verificar si se proporciona 'book_id' en la URL
+    # Verifica el estado de la sesión
+    data = guard_session(allow_only_signed=True)
+    if data["is_authenticated"]:
 
-    if "user_id" in st.experimental_get_query_params():
-        st.button('Volver', key='volver', on_click=volver,
-                  args=["user_id"])
-        profile_component(
-            st.experimental_get_query_params()["user_id"][0])
-        st.button('Volver', key='volver2', on_click=volver,
-                  args=["user_id"])
-    elif "book_id" in st.experimental_get_query_params():
-        st.button('Volver', key='volver', on_click=volver,
-                  args=["book_id"])
-        book_detail_component(
-            st.experimental_get_query_params()["book_id"][0])
-        st.button('Volver', key='volver2', on_click=volver,
-                  args=["book_id"])
-    else:
-        list_users_component(lambda page, busqueda: search_users(url, page,
-                                                                 LIMIT,
-                                                                 busqueda))
+        if "user_id" in st.experimental_get_query_params():
+            st.button('Volver', key='volver', on_click=volver,
+                      args=["user_id"])
+            profile_component(
+                st.experimental_get_query_params()["user_id"][0])
+            st.button('Volver', key='volver2', on_click=volver,
+                      args=["user_id"])
+        elif "book_id" in st.experimental_get_query_params():
+            st.button('Volver', key='volver', on_click=volver,
+                      args=["book_id"])
+            book_detail_component(
+                st.experimental_get_query_params()["book_id"][0])
+            st.button('Volver', key='volver2', on_click=volver,
+                      args=["book_id"])
+        else:
+            list_users_component(lambda page, busqueda: search_users(url, page,
+                                                                     LIMIT,
+                                                                     busqueda))

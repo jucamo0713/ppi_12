@@ -18,7 +18,7 @@ def list_users_component(callback_to_get_data: Callable[[int, str], dict]):
     st.title("Listado de Usuarios")
     busqueda = st.text_input("Buscar usuario",
                              on_change=restart_pagination_params,
-                             help="Buca por nombre, usuario o correo")
+                             help="Busca por nombre, usuario o correo")
     response = callback_to_get_data(st.session_state.page, busqueda)
     usuarios = response["data"]
     metadata = response["metadata"]
@@ -34,6 +34,9 @@ def list_users_component(callback_to_get_data: Callable[[int, str], dict]):
             # para mantener una estructura uniforme
             columns = st.columns(3)
         with columns[i % 3]:
+            image = "components/images/user_image.png"
+            # Muestra la imagen del usuario
+            st.image(image, width=150)
             st.write(f"**Nombre:** {usuario['name']}")
             st.write(f"**Usuario:** {usuario['user']}")
             st.button(f" Ver perfil de {usuario['user']}",

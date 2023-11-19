@@ -6,6 +6,7 @@ from fake_useragent import UserAgent
 # Importaciones de módulos internos de la aplicación
 from components.BookCard import book_card
 from components.BookDetailComponent import book_detail_component
+from components.ListUsersComponent import restart_pagination_params
 from components.ProfileComponent import profile_component
 from utils.BasicConfig import basic_config
 from utils.GetUrl import get_url

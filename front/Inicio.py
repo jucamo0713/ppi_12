@@ -35,9 +35,6 @@ def volver(value: str):
     st.experimental_set_query_params(**params)
 
 
-# Función para reiniciar los parámetros de paginación
-def restart_pagination_params():
-    st.session_state.page = 1
 
 
 # Verifica si 'value' tiene un valor verdadero, lo que significa que la
@@ -135,7 +132,7 @@ if value:
         st.markdown("---")
 
         # Mensaje si no hay resultados
-        if not libros:
+        if not libros or len(libros) < 1:
             # Si no se encontraron libros que coincidan con la búsqueda,
             # muestra un mensaje informativo.
             st.info("No se encontraron resultados para la búsqueda.")

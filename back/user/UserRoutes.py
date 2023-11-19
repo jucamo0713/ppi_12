@@ -1,5 +1,6 @@
 # Importaciones de módulos internos de la aplicación
 from user.Me import ME
+from user.SearchAllUsers import SEARCH_ALL_USERS
 from user.SearchUserById import SEARCH_USER_BY_ID
 
 # Definición de las rutas y controladores
@@ -8,5 +9,8 @@ USER_ROUTES = [{'path': '/user',
                 'instance': ME},
                {'path': '/user',
                 'tag': 'User',
-                'instance': SEARCH_USER_BY_ID}
+                'instance': SEARCH_USER_BY_ID},
+               {'path': '/user',
+                'tag': 'User',
+                'instance': SEARCH_ALL_USERS}
                ]

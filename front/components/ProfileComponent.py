@@ -1,13 +1,18 @@
+# Importaciones de librerías estándar de Python
+from datetime import datetime
 import textwrap
 
+# Importaciones de librerías de terceros
+import matplotlib.pyplot as plt
 import streamlit as st
 
+# Importaciones de módulos internos de la aplicación
 from components.BookCard import book_card
 from utils.GetUrl import get_url
 from utils.HttpUtils import HttpUtils
 
-import matplotlib.pyplot as plt
-from collections import Counter  # TODO: Quitar
+# Establece el rango mínimo para permitir años anteriores a 2013
+MIN_FECHA_NACIMIENTO = datetime(1900, 1, 1)
 
 
 def close_session():
@@ -75,6 +80,30 @@ def search_user_data(url: str, user_id: str):
         return None
 
 
+def update_user_data(url: str, user_token: str, new_data: dict):
+    """
+    Actualiza los datos del usuario.
+
+    Args:
+        url (str): URL de la API.
+        user_token (str): Token de autenticación del usuario.
+        new_data (dict): Nuevo conjunto de datos del usuario a actualizar.
+
+    Returns:
+        bool: True si la actualización fue exitosa, False en caso contrario.
+    """
+    response = HttpUtils.put(f'{url}/user/update/',
+                             body=new_data,
+                             authorization=user_token)
+    if response["success"]:
+        st.session_state.user = response["data"]["user"]
+        st.session_state.token = response["data"]["token"]
+        st.session_state["updated_data"] = True
+
+    else:
+        st.session_state["updated_data"] = False
+
+
 def profile_component(user_id: str = None):
     """
     Muestra el componente de perfil de usuario si el usuario está autenticado.
@@ -87,9 +116,17 @@ def profile_component(user_id: str = None):
     >>> profile_component()
     """
     url = get_url()
-    if user_id is not None:
+    my_profile = not (user_id is not None and ("user" not in st.session_state
+                                               or user_id !=
+                                               st.session_state.user["id"]))
+    # Verifica si el perfil es propio o de otro usuario
+    if not my_profile:
+        # Si no es el perfil propio, obtén los datos del usuario mediante la
+        # función search_user_data
         usuario = search_user_data(url, user_id)
         name = usuario["name"]
+
+        # Muestra un mensaje de bienvenida y los detalles del usuario
         st.title(f"Bienvenido!")
         st.title(f"Soy {name}!")
         data = {
@@ -99,9 +136,14 @@ def profile_component(user_id: str = None):
             "Fecha de nacimiento": usuario["burn_date"],
             "Fecha de registro": usuario["registered_date"]
         }
+        st.table(data)
     else:
+        # Si es el perfil propio, obtén los datos del usuario de la sesión
         usuario = st.session_state.user
         name = usuario["name"]
+        user_id = usuario["id"]
+
+        # Muestra un mensaje de bienvenida y los detalles del usuario
         st.title(f"Bienvenido, {name}!")
         data = {
             "Nombre": name,
@@ -110,37 +152,114 @@ def profile_component(user_id: str = None):
             "Fecha de nacimiento": usuario["burn_date"],
             "Fecha de registro": usuario["registered_date"]
         }
+        st.table(data)
+
+        # Expande la sección para actualizar datos del usuario
+        with (st.expander("Actualizar datos")):
+            # Crear campos de entrada para la modificación de datos
+            new_user = st.text_input("Nuevo user:", usuario["user"])
+            new_name = st.text_input("Nuevo nombre:", usuario["name"])
+            new_email = st.text_input("Nuevo correo:", usuario["email"])
+
+            # Establece el rango máximo para no permitir menores de 13 años
+            current_date = datetime.now()
+            max_fecha_nacimiento = datetime(current_date.year - 13,
+                                            current_date.month,
+                                            current_date.day)
+            new_burn_date = st.date_input("Fecha de Nacimiento",
+                                          min_value=MIN_FECHA_NACIMIENTO,
+                                          max_value=max_fecha_nacimiento,
+                                          value=datetime.fromisoformat(
+                                              usuario["burn_date"]))
+            burn = datetime(new_burn_date.year,
+                            new_burn_date.month,
+                            new_burn_date.day).isoformat() + "Z"
+
+            # Puedes agregar más campos según los atributos que desees
+            # modificar
+
+            # Verifica si se han realizado cambios y muestra el botón para
+            # guardar
+            if new_name != "" and new_email != "" and new_user != "" and (
+                    new_email != usuario["email"] or new_name != name or
+                    new_user != usuario["user"] or burn != usuario[
+                        "burn_date"]):
+                # Botón para guardar cambios
+                data = {
+                    "name": new_name if new_name != name else None,
+                    "email": new_email if new_email != usuario[
+                        "email"] else None,
+                    "burn_date": burn if burn != usuario[
+                        "burn_date"] else None,
+                    "user": new_user if new_user != usuario["user"] else None
+                }
+                if st.button("Guardar Cambios", on_click=update_user_data,
+                             args=[url, st.session_state.token, data]):
+
+                    # Verifica si los datos se han actualizado con éxito
+                    if st.session_state["updated_data"]:
+                        st.session_state["updated_data"] = False
+                        st.success("¡Datos actualizados con éxito!")
+
         # Botón para cerrar sesión
         st.button("Cerrar Sesión", on_click=close_session)
 
-    st.table(data)
+    # Título indicando que se mostrarán los libros del usuario
     st.title("Mis Libros")
+
+    # Opciones de pestañas para los tipos de libros: Leídos, En Proceso de
+    # Lectura, Favoritos
     my_books_tabs = ["Leídos", "En Proceso de Lectura", "Favoritos"]
+
+    # Crear pestañas utilizando st.tabs y asignarlas a las variables read,
+    # reading, favorite
     read, reading, favorite = st.tabs(my_books_tabs)
+
+    # Obtener el token de la sesión del usuario, si existe
     token = st.session_state.token if "token" in st.session_state else None
+
+    # Mostrar los libros leídos en la pestaña "Leídos"
     with read:
-        read_books = \
-            search_user_books(url, "read", 5, 1,
-                              token, user_id)["data"]
+        # Obtener la lista de libros leídos del usuario
+        read_books = search_user_books(url, "read", 5, 1,
+                                       token, user_id)["data"]
+
+        # Crear columnas para mostrar los libros leídos en formato de tarjetas
         read_columns = st.columns(5)
         for index, data in enumerate(read_books):
             with read_columns[index]:
+                # Mostrar la tarjeta del libro utilizando la función book_card
                 book_card(data, "read")
+
+    # Mostrar los libros en proceso de lectura en la pestaña "En Proceso de
+    # Lectura"
     with reading:
+        # Obtener la lista de libros en proceso de lectura del usuario
         reading_books = \
-            search_user_books(url, "reading", 5, 1,
-                              token, user_id)["data"]
+            search_user_books(url, "reading", 5, 1, token,
+                              user_id)["data"]
+
+        # Crear columnas para mostrar los libros en proceso de lectura en
+        # formato de tarjetas
         reading_columns = st.columns(5)
         for index, data in enumerate(reading_books):
             with reading_columns[index]:
+                # Mostrar la tarjeta del libro utilizando la función book_card
                 book_card(data, "reading")
+
+    # Mostrar los libros favoritos en la pestaña "Favoritos"
     with favorite:
+        # Obtener la lista de libros favoritos del usuario
         favorite_books = \
-            search_user_books(url, "favorite", 5, 1,
-                              token, user_id)["data"]
+            search_user_books(url, "favorite", 5, 1, token,
+                              user_id)["data"]
+
+        # Crear columnas para mostrar los libros favoritos en formato de
+        # tarjetas
         favorite_columns = st.columns(5)
         for index, data in enumerate(favorite_books):
             with favorite_columns[index]:
+                # Mostrar la tarjeta del libro utilizando la función book_card
                 book_card(data, "favorites")
 
     # Estadísticos de lectura
@@ -153,51 +272,57 @@ def profile_component(user_id: str = None):
     total_leidos = estadisticos["distribution"]["reads"]
     total_favoritos = estadisticos["distribution"]["reading"]
     total_progreso = estadisticos["distribution"]["favorite"]
-    # Datos para el gráfico de torta
-    datos_torta = [total_leidos,
-                   total_favoritos,
-                   total_progreso,
-                   ]
-    etiquetas = [f'Leídos\n({total_leidos} libros)',
-                 f'Favoritos\n({total_favoritos} libros)',
-                 f'En Progreso\n({total_progreso} libros)']
 
-    # Crear el gráfico de torta
-    ax.pie(datos_torta, labels=etiquetas, autopct='%1.1f%%', startangle=90,
-           counterclock=False)
+    if total_leidos != 0 or total_favoritos != 0 or total_progreso != 0:
+        # Datos para el gráfico de torta
+        datos_torta = [total_leidos,
+                       total_favoritos,
+                       total_progreso,
+                       ]
+        etiquetas = [f'Leídos\n({total_leidos} libros)',
+                     f'Favoritos\n({total_favoritos} libros)',
+                     f'En Progreso\n({total_progreso} libros)']
 
-    # Equal aspect ratio asegura que el gráfico de torta sea circular.
-    ax.axis('equal')
-    ax.set_title('Distribución de Libros por Categoría')
+        # Crear el gráfico de torta
+        ax.pie(datos_torta, labels=etiquetas, autopct='%1.1f%%', startangle=90,
+               counterclock=False)
 
-    # Mostrar el gráfico en Streamlit
-    st.pyplot(fig)
+        # Equal aspect ratio asegura que el gráfico de torta sea circular.
+        ax.axis('equal')
+        ax.set_title('Distribución de Libros por Categoría \n')
 
-    # Crear un gráfico de barras
-    fig, ax = plt.subplots()
-    ax.bar(estadisticos["top_authors"]["authors"],
-           estadisticos["top_authors"]["counts"])
-    ax.set_xlabel('Autores')
-    ax.set_ylabel('Número de Libros')
-    ax.set_title('Top 5 Autores Más Leídos')
-    plt.xticks(rotation=-15)
-    # Establecer el formato de los ticks del eje y para asegurar números
-    # enteros
-    ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+        # Mostrar el gráfico en Streamlit
+        st.pyplot(fig)
 
-    # Mostrar el gráfico en Streamlit
-    st.pyplot(fig)
+        # Crear un gráfico de barras
+        fig, ax = plt.subplots()
+        ax.bar(estadisticos["top_authors"]["authors"],
+               estadisticos["top_authors"]["counts"])
+        ax.set_xlabel('Autores \n')
+        ax.set_ylabel('Número de Libros')
+        ax.set_title('Top 5 autores más leídos')
+        # Establecer el formato de los ticks del eje y para asegurar números
+        # enteros
+        ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+        plt.xticks(rotation=25, ha="right")
+        # Mostrar el gráfico en Streamlit
+        st.pyplot(fig)
 
-    # Crear un gráfico de barras
-    fig, ax = plt.subplots()
-    ax.barh([textwrap.shorten(x, 25) for x in estadisticos["top_more_reads"][
-        "books"]],
+        # Crear un gráfico de barras
+        fig, ax = plt.subplots()
+        ax.barh(
+            [textwrap.shorten(x, 25) for x in estadisticos["top_more_reads"][
+                "books"]],
             estadisticos["top_more_reads"]["read_values"])
-    ax.set_ylabel('Libros')
-    ax.set_xlabel('Número de Lecturas')
-    ax.set_title('Top Libros mas veces leído')
-    # Establecer el formato de los ticks del eje y para asegurar números
-    # enteros
-    ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
-    # Mostrar el gráfico en Streamlit
-    st.pyplot(fig)
+        ax.set_ylabel('Libros')
+        ax.set_xlabel('Número de lecturas')
+        ax.set_title('Top libros más veces leídos')
+        # Establecer el formato de los ticks del eje y para asegurar números
+        # enteros
+        ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
+
+        # Mostrar el gráfico en Streamlit
+        st.pyplot(fig)
+    else:
+        st.warning("No ha leído ni está leyendo ningún libro hasta el "
+                   "momento.")

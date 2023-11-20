@@ -112,7 +112,7 @@ class HttpUtils:
 
     @classmethod
     def put(cls, url: str, body: dict = None, headers: dict = None,
-            query: dict = None):
+            query: dict = None, authorization: str = None):
         """
         Realiza una solicitud HTTP PUT.
 
@@ -134,6 +134,8 @@ class HttpUtils:
         data["headers"] = cls.generate_default_headers()
         if headers is not None:
             data["headers"] = {**data["headers"], **headers}
+        if authorization is not None:
+            data["headers"]['authentication'] = f'Bearer {authorization}'
         if query is not None:
             data["params"] = query
         response = requests.put(url, **data)

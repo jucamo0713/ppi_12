@@ -61,9 +61,24 @@ def search_user_books(url: str, type_list: str, limit: int, page: int,
 
 
 def search_statistics(url: str, user_id: str = None, user_token: str = None):
+    """
+    Obtiene las estadísticas de lectura de un usuario.
+
+    Args:
+        url (str): URL de la API.
+        user_id (str): ID del usuario para el cual se solicitan las
+        estadísticas.
+        user_token (str): Token de autenticación del usuario.
+
+    Returns:
+        dict or None: Un diccionario con las estadísticas de lectura si la
+        solicitud es exitosa, None si hay un error.
+
+    Ejemplo:
+    >>> search_statistics('https://api.com', 'user123', 'token123')
+    """
     response = HttpUtils.get(f'{url}/user_book/statistics',
-                             query={
-                                 "user_id": user_id},
+                             query={"user_id": user_id},
                              authorization=user_token)
     if response['success']:
         return response['data']
@@ -72,6 +87,20 @@ def search_statistics(url: str, user_id: str = None, user_token: str = None):
 
 
 def search_user_data(url: str, user_id: str):
+    """
+    Obtiene los datos de un usuario por su ID.
+
+    Args:
+        url (str): URL de la API.
+        user_id (str): ID del usuario.
+
+    Returns:
+        dict or None: Un diccionario con los datos del usuario si la
+        solicitud es exitosa, None si hay un error.
+
+    Ejemplo:
+    >>> search_user_data('https://api.com', 'user123')
+    """
     response = HttpUtils.get(f'{url}/user/by-id',
                              query={"id": user_id})
     if response['success']:
@@ -102,6 +131,50 @@ def update_user_data(url: str, user_token: str, new_data: dict):
 
     else:
         st.session_state["updated_data"] = False
+
+
+def follow_user(url, token, user_to_follow_id: str):
+    """
+    Realiza una solicitud para seguir a otro usuario.
+
+    Args:
+        url (str): URL de la API.
+        token (str): Token de autenticación del usuario que realiza la acción.
+        user_to_follow_id (str): ID del usuario al que se desea seguir.
+    """
+    HttpUtils.post(f"{url}/follow", authorization=token,
+                   query={"follow_id": user_to_follow_id})
+
+
+def unfollow_user(url, token, user_to_unfollow_id: str):
+    """
+    Realiza una solicitud para dejar de seguir a otro usuario.
+
+    Args:
+        url (str): URL de la API.
+        token (str): Token de autenticación del usuario que realiza la acción.
+        user_to_unfollow_id (str): ID del usuario al que se desea dejar de
+        seguir.
+    """
+    HttpUtils.put(f"{url}/unfollow", authorization=token, query={
+        "follow_id": user_to_unfollow_id})
+
+
+def validate_follow_user(url, token, user_to_follow_id: str):
+    """
+    Realiza una solicitud para dejar de seguir a otro usuario.
+
+    Args:
+        url (str): URL de la API.
+        token (str): Token de autenticación del usuario que realiza la acción.
+        user_to_unfollow_id (str): ID del usuario al que se desea dejar de
+        seguir.
+    """
+    response = HttpUtils.get(f"{url}/follow/validate-following",
+                             authorization=token,
+                             query={"follow_id": user_to_follow_id})
+
+    return response["data"]
 
 
 def profile_component(user_id: str = None):
@@ -137,6 +210,15 @@ def profile_component(user_id: str = None):
             "Fecha de registro": usuario["registered_date"]
         }
         st.table(data)
+        validated = validate_follow_user(url, st.session_state.token, user_id)
+        if not validated:
+            if st.button("Seguir a este usuario", on_click=follow_user,
+                         args=[url, st.session_state.token, user_id]):
+                st.success(f"Ahora sigues a {usuario['user']}")
+        else:
+            if st.button("Dejar de Seguir", on_click=unfollow_user,
+                         args=[url, st.session_state.token, user_id]):
+                st.success(f"Has dejado de seguir a este usuario.")
     else:
         # Si es el perfil propio, obtén los datos del usuario de la sesión
         usuario = st.session_state.user
@@ -174,9 +256,6 @@ def profile_component(user_id: str = None):
             burn = datetime(new_burn_date.year,
                             new_burn_date.month,
                             new_burn_date.day).isoformat() + "Z"
-
-            # Puedes agregar más campos según los atributos que desees
-            # modificar
 
             # Verifica si se han realizado cambios y muestra el botón para
             # guardar

@@ -289,7 +289,7 @@ def profile_component(user_id: str = None):
 
         # Equal aspect ratio asegura que el gráfico de torta sea circular.
         ax.axis('equal')
-        ax.set_title('Distribución de Libros por Categoría \n')
+        ax.set_title('Distribución de libros por categoría \n')
 
         # Mostrar el gráfico en Streamlit
         st.pyplot(fig)

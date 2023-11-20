@@ -51,7 +51,7 @@ def recomendate_books(request: Request, authentication: str = Header(...)):
         [
             {
                 '$match': {
-                    'user_id': ObjectId('65361222941cb8884687fefb')
+                    'user_id': ObjectId(user_id)
                 }
             },
             {
@@ -74,7 +74,7 @@ def recomendate_books(request: Request, authentication: str = Header(...)):
                         '$sum': 1
                     },
                     'books': {
-                        '$push': 'book_id'
+                        '$push': '$book_id'
                     }
                 }
             },
@@ -93,9 +93,11 @@ def recomendate_books(request: Request, authentication: str = Header(...)):
             },
             {
                 '$match': {
-                    'book._id': {
-                        '$ne': {
-                            '$in': '$books'
+                    '$expr': {
+                        '$not': {
+                            '$in': [
+                                '$book._id', '$books'
+                            ]
                         }
                     }
                 }

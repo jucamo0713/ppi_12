@@ -1,5 +1,4 @@
 # Importaciones de librerías Nativas
-import math
 from datetime import datetime
 
 # Importaciones de librerías de terceros
@@ -9,7 +8,6 @@ import streamlit as st
 from utils.GetUrl import get_url
 from utils.GuardSession import guard_session
 from utils.HttpUtils import HttpUtils
-from components.ProfileComponent import profile_component
 
 DEFAULT_COMMENTS_LIMIT = 5
 
@@ -147,7 +145,7 @@ def buscar_detalle_de_libro_por_usuario(token: str, book_id: str, url: str):
 
 
 def guardar_detalle_libro(url: str, book_id: str, token: str, update_rating:
-bool=False):
+bool = False):
     """
     Guarda los detalles de un libro para un usuario en la API.
 
@@ -155,10 +153,6 @@ bool=False):
         url (str): URL de la API.
         book_id (str): ID del libro.
         token (str): Token de autenticación del usuario.
-        read (int): Indica cuantas veces se a leido el libro.
-        in_process (bool): Indica si el libro está en proceso de lectura.
-        favorites (bool): Indica si el libro está marcado como favorito.
-        rating (int): Calificación del libro.
 
     Ejemplo:
     >>> guardar_detalle_libro('https://api.com', 'book123', 'token123',
@@ -184,8 +178,6 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
         book (dict): Detalles del libro (opcional).
         url (str): URL de la API (opcional).
 
-    Ejemplo:
-    >>> book_detail_component('book123', book_info, 'https://api.com')
     """
     if url is None:
         url = get_url()

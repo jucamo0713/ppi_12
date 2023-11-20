@@ -169,8 +169,8 @@ def profile_component(user_id: str = None):
             new_burn_date = st.date_input("Fecha de Nacimiento",
                                           min_value=MIN_FECHA_NACIMIENTO,
                                           max_value=max_fecha_nacimiento,
-                                          value=datetime.fromisoformat(usuario[
-                                                                           "burn_date"]))
+                                          value=datetime.fromisoformat(
+                                              usuario["burn_date"]))
             burn = datetime(new_burn_date.year,
                             new_burn_date.month,
                             new_burn_date.day).isoformat() + "Z"
@@ -222,8 +222,7 @@ def profile_component(user_id: str = None):
     with read:
         # Obtener la lista de libros leídos del usuario
         read_books = search_user_books(url, "read", 5, 1,
-                                       token, user_id)[
-            "data"]
+                                       token, user_id)["data"]
 
         # Crear columnas para mostrar los libros leídos en formato de tarjetas
         read_columns = st.columns(5)

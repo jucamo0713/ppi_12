@@ -36,8 +36,6 @@ def volver(value: str):
     st.experimental_set_query_params(**params)
 
 
-
-
 # Verifica si 'value' tiene un valor verdadero, lo que significa que la
 # configuración básica fue exitosa.
 if value:

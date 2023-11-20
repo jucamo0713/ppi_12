@@ -2,10 +2,15 @@
 import streamlit as st
 
 from components.BookDetailComponent import book_detail_component
+from components.ListUsersComponent import list_users_component
 # Importaciones de módulos internos de la aplicación
 from components.ProfileComponent import profile_component
+from utils.GetUrl import get_url
+from utils.HttpUtils import HttpUtils
 from utils.BasicConfig import basic_config
 from utils.GuardSession import guard_session
+
+url = get_url()
 
 
 # Función para volver a la lista de libros
@@ -19,6 +24,59 @@ def volver(key: str):
     del params[key]
     st.experimental_set_query_params(**params)
 
+
+def search_followers(url: str, page: int,
+                     limit: int, token: str,
+                     busqueda: str = '', ) -> (dict):
+    """
+    Busca seguidores en la aplicación según un término de búsqueda.
+
+    Args:
+        url (str): URL de la API.
+        page (int): Número de página.
+        limit (int): Límite de usuarios a recuperar por página.
+        token (str): token que valida la sesión.
+        busqueda (str): Término de búsqueda para filtrar usuarios (opcional).
+    Returns:
+        dict: Diccionario con datos de los seguidores recuperados de la API.
+    """
+    response = HttpUtils.get(f'{url}/follow/followers', {
+        'search_param': busqueda,
+        'limit': limit,
+        'page': page
+    }, authorization=token)
+    if response['success']:
+        return response['data']
+
+
+def search_following(url: str, page: int,
+                     limit: int, token: str,
+                     busqueda: str = '', ) -> (dict):
+    """
+    Busca a los usuarios seguidos en la aplicación según un término de
+    búsqueda.
+
+    Args:
+        url (str): URL de la API.
+        page (int): Número de página.
+        limit (int): Límite de usuarios a recuperar por página.
+        token (str): token que valida la sesión.
+        busqueda (str): Término de búsqueda para filtrar usuarios (opcional).
+
+    Returns:
+        dict: Diccionario con datos de los usuarios seguidos recuperados de la
+        API.
+    """
+    response = HttpUtils.get(f'{url}/follow/following', {
+        'search_param': busqueda,
+        'limit': limit,
+        'page': page
+    }, authorization=token)
+    if response['success']:
+        return response['data']
+
+
+LIMIT = 10
 
 # Configura la aplicación básica
 value = basic_config()
@@ -54,5 +112,19 @@ if value:
             st.button('Volver', key='volver2', on_click=volver,
                       args=["book_id"])
         else:
-            # Muestra el componente del perfil del usuario
-            profile_component()
+            tabs = st.tabs(["Perfil", "Seguidores", "Siguiendo"])
+            with tabs[0]:
+                # Muestra el componente del perfil del usuario
+                profile_component()
+            with tabs[1]:
+                list_users_component(
+                    lambda x, y: search_followers(url, x, LIMIT,
+                                                  data['token'],
+                                                  y), "Seguidores")
+            with tabs[2]:
+                list_users_component(
+                    lambda x, y: search_following(url, x,
+                                                  LIMIT,
+                                                  data['token'],
+                                                  y),
+                    "Seguido")

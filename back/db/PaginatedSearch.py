@@ -90,16 +90,18 @@ def paginated_search(query: dict,
     metadata = []
 
     # Calcula el número de documentos a saltar para la paginación.
-    if page and limit:
+    if page is not None and limit is not None:
         skip = (page - 1) * limit
         data.append({'$skip': skip})
         data.append({'$limit': limit})
-
+    else:
+        page = 1
     # Agrega etapas para obtener información de paginación.
     metadata.append({'$count': 'total'})
     metadata.append({'$addFields': {'page': page}})
     metadata.append({'$addFields': {'total_pages': {
-        '$ceil': {'$divide': ['$total', limit]}}} if limit else 0})
+        '$ceil': {'$divide': ['$total', limit]}} if limit is not None and
+                                                    limit != 0 else 0}})
 
     if pre_query is not None:
         response += pre_query

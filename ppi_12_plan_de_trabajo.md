@@ -52,18 +52,19 @@
 
 ## 06/11/2023 - 13/11/2023
 
-| Tarea                      | Descripción                                                                                                                                                                                                                  | Responsable                                           | Estado    |  
-|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|-----------|
-| Recomendaciones de libros. | Sistema donde se recomienden libros al usuario según distintos patrones reconocidos mediante el uso de la librería **NetworkX**                                                                                              | [Juan Camilo Montoya](https://github.com/jucamo0713)  | Terminado     | 
-| Estadísticos de lectura.   | Vista y funcionalidad donde se muestren gráficos y estadísticos de lectura del usuario mediante el uso de las librerías **Numpy** para el cálculo de los mismos y **Matplotlib** para mostrarlos en el formato más adecuado. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Terminado |   
+| Tarea                      | Descripción                                                                                                                                                                                                                  | Responsable                                           | Estado |  
+|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|--------|
+| Recomendaciones de libros. | Sistema donde se recomienden libros al usuario según distintos patrones reconocidos mediante el uso de la librería **NetworkX**                                                                                              | [Juan Camilo Montoya](https://github.com/jucamo0713)  | Listo  | 
+| Estadísticos de lectura.   | Vista y funcionalidad donde se muestren gráficos y estadísticos de lectura del usuario mediante el uso de las librerías **Numpy** para el cálculo de los mismos y **Matplotlib** para mostrarlos en el formato más adecuado. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo  |   
 
 ## 13/11/2023 - 20/11/2023
 
-| Tarea                        | Descripción                                                                                                          | Responsable                                           | Estado      |  
-|------------------------------|----------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|-------------|
-| Recomendar amigos.           | Procesos para recomendar usuarios con gustos similares mediante la librería **NetworkX**.                            | [Juan Camilo Montoya](https://github.com/jucamo0713)  | Sin Empezar |  
-| Seguir y agregar amigos.     | Servicio que permite la creación de las relaciones entre usuarios, posibilitando al usuario seguir o agregar amigos. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar | 
-| Crear términos y condiciones | Se realizará el acuerdo escrito que deben de leer y confirmar los usuarios para poder usar la aplicación.            | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo       |  
+| Tarea                          | Descripción                                                                                                          | Responsable                                           | Estado |  
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|--------|
+| Recomendar amigos.             | Procesos para recomendar usuarios con gustos similares mediante la librería **NetworkX**.                            | [Juan Camilo Montoya](https://github.com/jucamo0713)  | Listo  |  
+| Seguir y agregar amigos.       | Servicio que permite la creación de las relaciones entre usuarios, posibilitando al usuario seguir o agregar amigos. | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo  |
+| Lista de seguidores y seguidos | Vista donde se vea el listado de los usuarios que sigo y los que me siguen.                                          | [Juan Camilo Montoya](https://github.com/jucamo0713)  | Listo  |
+| Crear términos y condiciones   | Se realizará el acuerdo escrito que deben de leer y confirmar los usuarios para poder usar la aplicación.            | [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo  |  
 
 ## 20/11/2023 - 27/11/2023
 

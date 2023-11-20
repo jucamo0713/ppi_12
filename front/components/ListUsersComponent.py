@@ -5,17 +5,17 @@ from typing import Callable
 import streamlit as st
 
 
-
 # Función para reiniciar los parámetros de paginación
-def restart_pagination_params():
+def restart_pagination_params(key: str):
     """
     Función para reiniciar los parámetros de paginación en la sesión de
     Streamlit.
     """
-    st.session_state.page = 1
+    st.session_state[f"{key}-page"] = 1
 
 
-def list_users_component(callback_to_get_data: Callable[[int, str], dict]):
+def list_users_component(callback_to_get_data: Callable[[int, str], dict],
+                         key: str = ""):
     """
     Componente de Streamlit que muestra un listado de usuarios con
     paginación y búsqueda.
@@ -32,19 +32,22 @@ def list_users_component(callback_to_get_data: Callable[[int, str], dict]):
 
     """
     # Inicializar el estado de la sesión para el paginado
-    if 'page' not in st.session_state:
+    if f"{key}-page" not in st.session_state:
         # Si 'page' no está definido en el estado de sesión,
         # inicialízalo con 1.
-        st.session_state.page = 1
+        st.session_state[f"{key}-page"] = 1
 
     st.title("Listado de Usuarios")
 
     # Cuadro de búsqueda para buscar usuarios por nombre, usuario o correo.
     busqueda = st.text_input("Buscar usuario",
                              on_change=restart_pagination_params,
-                             help="Busca por nombre, usuario o correo")
+                             key=f"{key}-BuscarUsuarios",
+                             help="Busca por nombre, usuario o correo",
+                             args=[f"{key}-page"])
     # Llamar a la función de retorno de llamada para obtener datos de usuarios.
-    response = callback_to_get_data(st.session_state.page, busqueda)
+    response = callback_to_get_data(st.session_state.get(f"{key}-page"),
+                                    busqueda)
     usuarios = response["data"]
     metadata = response["metadata"]
 
@@ -61,14 +64,17 @@ def list_users_component(callback_to_get_data: Callable[[int, str], dict]):
 
         with columns[i % 3]:
             # Muestra la imagen del usuario
-            st.image("components/images/user_image.png", width=150)
+            st.image("components/images/user_image.png",
+                     use_column_width=True)
             st.write(f"**Nombre:** {usuario['name']}")
             st.write(f"**Usuario:** {usuario['user']}")
             # Botón para ver el perfil del usuario
+            user_id = usuario["_id"]
             st.button(
                 f" Ver perfil de {usuario['user']}",
                 on_click=lambda x: st.experimental_set_query_params(user_id=x),
-                args=[usuario["_id"]]
+                key=f"{key}-{user_id}",
+                args=[user_id]
             )
 
     # Paginación
@@ -81,7 +87,7 @@ def list_users_component(callback_to_get_data: Callable[[int, str], dict]):
         )
         # Proporciona un campo numérico para que los usuarios ingresen el
         # número de página.
-        st.number_input("page", key="page", label_visibility='hidden',
+        st.number_input("page", key=f"{key}-page", label_visibility='hidden',
                         step=1, min_value=1,
                         max_value=int(metadata['total_pages']))
     st.markdown("---")
@@ -91,4 +97,3 @@ def list_users_component(callback_to_get_data: Callable[[int, str], dict]):
         # Si no se encontraron usuarios que coincidan con la búsqueda,
         # muestra un mensaje informativo.
         st.info("No se encontraron resultados para la búsqueda.")
-

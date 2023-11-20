@@ -2,6 +2,8 @@
 from user.FollowUser import FOLLOW_USER
 from user.Me import ME
 from user.SearchAllUsers import SEARCH_ALL_USERS
+from user.SearchFollowers import SEARCH_FOLLOWERS
+from user.SearchFollowing import SEARCH_FOLLOWING
 from user.SearchUserById import SEARCH_USER_BY_ID
 from user.UnfollowUser import UNFOLLOW_USER
 from user.UpdateUsers import UPDATE_USERS
@@ -28,5 +30,11 @@ USER_ROUTES = [{'path': '/user',
                 'instance': UNFOLLOW_USER},
                {'path': '/follow',
                 'tag': 'Follow',
-                'instance': VALIDATE_IF_FOLLOWING}
+                'instance': VALIDATE_IF_FOLLOWING},
+               {'path': '/follow',
+                'tag': 'Follow',
+                'instance': SEARCH_FOLLOWERS},
+               {'path': '/follow',
+                'tag': 'Follow',
+                'instance': SEARCH_FOLLOWING},
                ]

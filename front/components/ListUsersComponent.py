@@ -1,6 +1,9 @@
+# Importaciones de librerías estándar de Python
 from typing import Callable
 
+# Importaciones de librerías de terceros
 import streamlit as st
+
 
 
 # Función para reiniciar los parámetros de paginación
@@ -88,3 +91,4 @@ def list_users_component(callback_to_get_data: Callable[[int, str], dict]):
         # Si no se encontraron usuarios que coincidan con la búsqueda,
         # muestra un mensaje informativo.
         st.info("No se encontraron resultados para la búsqueda.")
+

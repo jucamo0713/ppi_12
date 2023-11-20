@@ -39,23 +39,31 @@ def generate_statistics(request: Request,
         }
     ]
     user_books = list(request.app.database['user_books'].aggregate(query))
-    data = pd.DataFrame(user_books)
-    top_authors = data['book'].apply(
-        lambda x: x['author']).value_counts().head(5)
-    reads = data[data['read'] >= 1]
-    reading = data[data['reading']]
-    favorite = data[data['favorite']]
-    top_reads = reads.sort_values(by='read', ascending=False).head(5)
-    return {
-        "distribution": {
-            "reads": len(reads),
-            "reading": len(reading),
-            "favorite": len(favorite),
-        },
-        "top_authors": {'authors': top_authors.index.tolist(),
-                        'counts': top_authors.tolist()},
-        "top_more_reads": {
-            'books': top_reads['book'].apply(lambda x: x['title']).tolist(),
-            'read_values': top_reads['read'].tolist()
+    if len(user_books) > 0:
+        data = pd.DataFrame(user_books)
+        top_authors = data['book'].apply(
+            lambda x: x['author']).value_counts().head(5)
+        reads = data[data['read'] >= 1]
+        reading = data[data['reading']]
+        favorite = data[data['favorite']]
+        top_reads = reads.sort_values(by='read', ascending=False).head(5)
+        return {
+            "distribution": {
+                "reads": len(reads),
+                "reading": len(reading),
+                "favorite": len(favorite),
+            },
+            "top_authors": {'authors': top_authors.index.tolist(),
+                            'counts': top_authors.tolist()},
+            "top_more_reads": {
+                'books': top_reads['book'].apply(
+                    lambda x: x['title']).tolist(),
+                'read_values': top_reads['read'].tolist()
+            }
         }
-    }
+    else:
+        return {"distribution": {
+            "reads": 0,
+            "reading": 0,
+            "favorite": 0,
+        }}

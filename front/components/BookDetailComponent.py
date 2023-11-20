@@ -146,7 +146,8 @@ def buscar_detalle_de_libro_por_usuario(token: str, book_id: str, url: str):
         return response["data"]
 
 
-def guardar_detalle_libro(url: str, book_id: str, token: str):
+def guardar_detalle_libro(url: str, book_id: str, token: str, update_rating:
+bool=False):
     """
     Guarda los detalles de un libro para un usuario en la API.
 
@@ -169,7 +170,8 @@ def guardar_detalle_libro(url: str, book_id: str, token: str):
                   body={"read": st.session_state.get("read"),
                         "reading": st.session_state.get("reading"),
                         "favorite": st.session_state.get("favorite"),
-                        "rating": st.session_state.get("rating")})
+                        "rating": st.session_state.get("rating") if
+                        update_rating else None})
 
 
 def book_detail_component(book_id: str, book: dict = None, url: str = None):
@@ -248,7 +250,7 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
                       label_visibility="hidden",
                       format="%f estrellas", step=0.5,
                       help="Haz clic para calificar el libro.",
-                      args=[url, book_id, data["token"]])
+                      args=[url, book_id, data["token"], True])
     # Comentarios
     st.header("Comentarios")
     if data["is_authenticated"]:

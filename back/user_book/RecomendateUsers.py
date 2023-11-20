@@ -12,7 +12,7 @@ RECOMENDATE_USERS = APIRouter()
 
 
 @RECOMENDATE_USERS.get('/recomendate-users')
-def recomendate_books(request: Request,
+def recomendate_users(request: Request,
                       authentication: str = Header(None)):
     token_data = validate_token(authentication)
     user_id = token_data['id']

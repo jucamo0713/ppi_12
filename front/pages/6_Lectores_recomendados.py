@@ -64,8 +64,10 @@ if value:
             for i, usuario in enumerate(recomendate["based_on_books_read"]):
                 with columns[i % 5]:
                     # Muestra la imagen del usuario
-                    st.image("components/images/user_image.png",
-                             use_column_width=True)
+                    st.image(
+                        "https://cdn-icons-png.flaticon.com/512/1974/"
+                        "1974050.png",
+                        use_column_width=True)
                     st.write(f"**Nombre:** {usuario['name']}")
                     st.write(f"**Usuario:** {usuario['user']}")
                     # Botón para ver el perfil del usuario

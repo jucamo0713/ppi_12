@@ -1,4 +1,6 @@
 # Importaciones de librerías de terceros
+from typing import Optional
+
 from bson import ObjectId
 from pydantic import BaseModel, Field
 

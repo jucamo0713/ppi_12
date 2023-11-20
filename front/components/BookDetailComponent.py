@@ -144,8 +144,8 @@ def buscar_detalle_de_libro_por_usuario(token: str, book_id: str, url: str):
         return response["data"]
 
 
-def guardar_detalle_libro(url: str, book_id: str, token: str, update_rating:
-bool = False):
+def guardar_detalle_libro(url: str, book_id: str, token: str,
+                          update_rating: bool = False):
     """
     Guarda los detalles de un libro para un usuario en la API.
 
@@ -153,19 +153,18 @@ bool = False):
         url (str): URL de la API.
         book_id (str): ID del libro.
         token (str): Token de autenticación del usuario.
-
-    Ejemplo:
-    >>> guardar_detalle_libro('https://api.com', 'book123', 'token123',
-    >>> True, False, True, 4)
     """
-
+    body = {"read": st.session_state.get("read"),
+            "reading": st.session_state.get("reading"),
+            "favorite": st.session_state.get("favorite") if
+            st.session_state.get("read") > 0 else False,
+            **({"rating": st.session_state.get("rating")} if
+               update_rating else {})}
     HttpUtils.put(f'{url}/user_book/upsert', query={"book_id": book_id},
                   headers={"Authentication": f"Bearer {token}"},
-                  body={"read": st.session_state.get("read"),
-                        "reading": st.session_state.get("reading"),
-                        "favorite": st.session_state.get("favorite"),
-                        "rating": st.session_state.get("rating") if
-                        update_rating else None})
+                  body=body)
+    if st.session_state.get("read") == 0:
+        st.session_state.favorite = False
 
 
 def book_detail_component(book_id: str, book: dict = None, url: str = None):
@@ -198,15 +197,12 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
     if data["is_authenticated"]:
         libro_detalle = buscar_detalle_de_libro_por_usuario(data["token"],
                                                             book_id, url)
-        if "read" not in st.session_state:
-            st.session_state.read = libro_detalle['read']
-        if "reading" not in st.session_state:
-            st.session_state.reading = libro_detalle['reading']
-        if "favorite" not in st.session_state:
-            st.session_state.favorite = libro_detalle['favorite']
-        if "rating" not in st.session_state:
-            st.session_state.rating = libro_detalle['rating'] if (
-                    libro_detalle['rating'] is not None) else 0
+
+        st.session_state.read = libro_detalle['read']
+        st.session_state.reading = libro_detalle['reading']
+        st.session_state.favorite = libro_detalle['favorite']
+        st.session_state.rating = float(libro_detalle['rating']) if (
+                libro_detalle['rating'] is not None) else 0.
 
         columns = st.columns(3)
         with columns[0]:
@@ -230,14 +226,14 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
                         value=st.session_state.favorite,
                         key="favorite",
                         on_change=guardar_detalle_libro,
-                        args=[url, book_id, data["token"]])
+                        args=[url, book_id, data["token"]],
+                        disabled=st.session_state.read == 0)
         if st.session_state.read > 0:
             st.header("Calificación")
             st.caption("Seleccione una calificación:")
-
             # Widget de calificación con estrellas
             st.slider("Calificación", 0., 5., key="rating",
-                      value=float(st.session_state.rating),
+                      value=st.session_state.get("rating"),
                       on_change=guardar_detalle_libro,
                       label_visibility="hidden",
                       format="%f estrellas", step=0.5,

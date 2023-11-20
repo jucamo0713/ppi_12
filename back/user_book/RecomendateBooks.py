@@ -3,6 +3,7 @@ from bson import ObjectId
 from fastapi import APIRouter, Request, Header
 
 from book.Book import Book
+from jwt_utils.Guard import validate_token
 from user_book.ConsolidatedAggergatte import consolidated_aggregate
 
 import networkx as nx
@@ -11,7 +12,9 @@ RECOMENDATE_BOOKS = APIRouter()
 
 
 @RECOMENDATE_BOOKS.get('/recomendate-books')
-def recomendate_books(request: Request, user_id: str):
+def recomendate_books(request: Request, authentication: str = Header(...)):
+    token_data = validate_token(authentication)
+    user_id = token_data['id']
     data = list(request.app.database['user_books'].aggregate(
         consolidated_aggregate))[0]
     user_id = ObjectId(user_id)

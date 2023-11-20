@@ -46,7 +46,8 @@ def list_users(request: Request, limit=15, page=1, search_param=''):
             }
         )))
 
-    # Si se encuentran libros, se crea una respuesta con los datos y metadatos
+    # Si se encuentran usuarios, se crea una respuesta con los datos y
+    # metadatos
     response = users[0] if len(users) > 0 else {'data': [], 'metadata': {
         'total': 0,
         'page': 0,

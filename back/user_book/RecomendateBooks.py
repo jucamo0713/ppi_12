@@ -21,7 +21,6 @@ def recomendate_books(request: Request, authentication: str = Header(...)):
     # Crear un grafo dirigido
     g = nx.DiGraph()
     # Agregar nodos y aristas al grafo
-    authors = set()
     for user in data["users"]:
         g.add_node(user["_id"], type="user", name=user["name"])
     for book in data["books"]:

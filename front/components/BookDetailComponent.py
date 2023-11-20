@@ -1,5 +1,4 @@
 # Importaciones de librerías Nativas
-import math
 from datetime import datetime
 
 # Importaciones de librerías de terceros
@@ -9,7 +8,6 @@ import streamlit as st
 from utils.GetUrl import get_url
 from utils.GuardSession import guard_session
 from utils.HttpUtils import HttpUtils
-from components.ProfileComponent import profile_component
 
 DEFAULT_COMMENTS_LIMIT = 5
 
@@ -146,7 +144,8 @@ def buscar_detalle_de_libro_por_usuario(token: str, book_id: str, url: str):
         return response["data"]
 
 
-def guardar_detalle_libro(url: str, book_id: str, token: str):
+def guardar_detalle_libro(url: str, book_id: str, token: str, update_rating:
+bool = False):
     """
     Guarda los detalles de un libro para un usuario en la API.
 
@@ -154,10 +153,6 @@ def guardar_detalle_libro(url: str, book_id: str, token: str):
         url (str): URL de la API.
         book_id (str): ID del libro.
         token (str): Token de autenticación del usuario.
-        read (int): Indica cuantas veces se a leido el libro.
-        in_process (bool): Indica si el libro está en proceso de lectura.
-        favorites (bool): Indica si el libro está marcado como favorito.
-        rating (int): Calificación del libro.
 
     Ejemplo:
     >>> guardar_detalle_libro('https://api.com', 'book123', 'token123',
@@ -169,7 +164,8 @@ def guardar_detalle_libro(url: str, book_id: str, token: str):
                   body={"read": st.session_state.get("read"),
                         "reading": st.session_state.get("reading"),
                         "favorite": st.session_state.get("favorite"),
-                        "rating": st.session_state.get("rating")})
+                        "rating": st.session_state.get("rating") if
+                        update_rating else None})
 
 
 def book_detail_component(book_id: str, book: dict = None, url: str = None):
@@ -182,8 +178,6 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
         book (dict): Detalles del libro (opcional).
         url (str): URL de la API (opcional).
 
-    Ejemplo:
-    >>> book_detail_component('book123', book_info, 'https://api.com')
     """
     if url is None:
         url = get_url()
@@ -248,7 +242,7 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
                       label_visibility="hidden",
                       format="%f estrellas", step=0.5,
                       help="Haz clic para calificar el libro.",
-                      args=[url, book_id, data["token"]])
+                      args=[url, book_id, data["token"], True])
     # Comentarios
     st.header("Comentarios")
     if data["is_authenticated"]:

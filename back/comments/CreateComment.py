@@ -14,9 +14,19 @@ CREATE_COMMENT = APIRouter()
 
 # Modelo de solicitud para crear un comentario de libro
 class CreateBookCommentRequest(BaseModel):
+    """
+    Modelo de datos para la creación de un comentario en un libro.
+
+    Atributos:
+    - `book_id` (str): Identificador del libro al que se agrega el comentario.
+    - `content` (str): Contenido del comentario.
+    - `responded_to` (str, opcional): Identificador del comentario al que se
+    está respondiendo, si es una respuesta.
+      Por defecto, es `None`.
+
+    """
     book_id: str
     content: str
-    # Este campo es opcional
     responded_to: str = None
 
 

@@ -10,7 +10,7 @@ GENERATE_STATISTICS = APIRouter()
 
 
 @GENERATE_STATISTICS.get("/statistics",
-                         response_description="List all user books")
+                         response_description="statistics of user")
 def generate_statistics(request: Request,
                         user_id: str = None,
                         authentication: str = Header(None)):

@@ -348,8 +348,8 @@ def profile_component(user_id: str = None):
     fig, ax = plt.subplots()
 
     total_leidos = estadisticos["distribution"]["reads"]
-    total_favoritos = estadisticos["distribution"]["reading"]
-    total_progreso = estadisticos["distribution"]["favorite"]
+    total_progreso = estadisticos["distribution"]["reading"]
+    total_favoritos = estadisticos["distribution"]["favorite"]
 
     if total_leidos != 0 or total_favoritos != 0 or total_progreso != 0:
         # Datos para el gráfico de torta

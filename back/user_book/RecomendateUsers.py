@@ -34,7 +34,11 @@ def recomendate_users(request: Request,
             g.add_edge(relation["book_id"], relation["user_id"],
                        read=relation["read"])
     # Libros que el usuario ha leído
-    user_books = set(g.successors(user_id))
+    try:
+        succesors = g.successors(user_id)
+    except nx.exception.NetworkXError:
+        succesors = []
+    user_books = set(succesors)
     other_users = set()
     for successor in user_books:
         # Obtener los sucesores de los sucesores del usuario

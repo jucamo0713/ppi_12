@@ -207,7 +207,6 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
         columns = st.columns(3)
         with columns[0]:
             st.number_input("\\# de veces leído",
-                            value=st.session_state.read,
                             key="read",
                             on_change=guardar_detalle_libro,
                             min_value=0,

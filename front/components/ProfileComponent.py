@@ -197,28 +197,27 @@ def profile_component(user_id: str = None):
         # Si no es el perfil propio, obtén los datos del usuario mediante la
         # función search_user_data
         usuario = search_user_data(url, user_id)
-        name = usuario["name"]
 
         # Muestra un mensaje de bienvenida y los detalles del usuario
+        user = usuario["user"]
         st.title(f"Bienvenido!")
-        st.title(f"Soy {name}!")
+        st.title(f"Soy {user}!")
         data = {
-            "Nombre": name,
-            "Usuario": usuario["user"],
-            "Correo": usuario["email"],
-            "Fecha de nacimiento": usuario["burn_date"],
+            "Usuario": user,
             "Fecha de registro": usuario["registered_date"]
         }
         st.table(data)
-        validated = validate_follow_user(url, st.session_state.token, user_id)
-        if not validated:
-            if st.button("Seguir a este usuario", on_click=follow_user,
-                         args=[url, st.session_state.token, user_id]):
-                st.success(f"Ahora sigues a {usuario['user']}")
-        else:
-            if st.button("Dejar de Seguir", on_click=unfollow_user,
-                         args=[url, st.session_state.token, user_id]):
-                st.success(f"Has dejado de seguir a este usuario.")
+        if ("token" in st.session_state):
+            validated = validate_follow_user(url, st.session_state.token,
+                                             user_id)
+            if not validated:
+                if st.button("Seguir a este usuario", on_click=follow_user,
+                             args=[url, st.session_state.token, user_id]):
+                    st.success(f"Ahora sigues a {usuario['user']}")
+            else:
+                if st.button("Dejar de Seguir", on_click=unfollow_user,
+                             args=[url, st.session_state.token, user_id]):
+                    st.success(f"Has dejado de seguir a este usuario.")
     else:
         # Si es el perfil propio, obtén los datos del usuario de la sesión
         usuario = st.session_state.user

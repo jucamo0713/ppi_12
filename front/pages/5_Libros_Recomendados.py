@@ -84,18 +84,23 @@ if value:
 
             # Mostrar libros recomendados basados en la lectura del usuario
             st.header("Basado en lo que has leído")
-            columns = st.columns(5)
-            for i, book in enumerate(recomendate["based_on_others_users"]):
-                with columns[i % 5]:
-                    book_card(book)
-            st.markdown("---")
-
+            if len(recomendate["based_on_others_users"]) > 0:
+                columns = st.columns(5)
+                for i, book in enumerate(recomendate["based_on_others_users"]):
+                    with columns[i % 5]:
+                        book_card(book)
+                st.markdown("---")
+            else:
+                st.write("Aun no te conocemos lo suficiente ♥")
             # Mostrar libros recomendados basados en los autores favoritos
             # del usuario
             st.header("Basado en tus autores favoritos")
-            columns = st.columns(5)
-            for i, book in enumerate(recomendate["based_on_author"]):
-                with columns[i % 5]:
-                    book_card(book, "author")
+            if len(recomendate["based_on_author"]) > 0:
+                columns = st.columns(5)
+                for i, book in enumerate(recomendate["based_on_author"]):
+                    with columns[i % 5]:
+                        book_card(book, "author")
 
-            st.markdown("---")
+                st.markdown("---")
+            else:
+                st.write("Aun no te conocemos lo suficiente ♥")

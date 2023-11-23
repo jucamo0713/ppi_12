@@ -68,34 +68,30 @@ def search_users(url: str, page: int, limit: int, busqueda: str = '') -> dict:
 value = basic_config(url)
 
 if value:
-    # Verifica el estado de la sesión
-    data = guard_session(allow_only_signed=True)
-    if data["is_authenticated"]:
-
-        # Comprueba si se está visualizando el perfil de un usuario específico
-        if "user_id" in st.experimental_get_query_params():
-            # Botón para volver a la lista de usuarios
-            st.button('Volver', key='volver', on_click=volver,
-                      args=["user_id"])
-            # Muestra el componente de perfil del usuario
-            profile_component(
-                st.experimental_get_query_params()["user_id"][0])
-            # Botón adicional para volver a la lista de usuarios
-            st.button('Volver', key='volver2', on_click=volver,
-                      args=["user_id"])
-        # Comprueba si se está visualizando los detalles de un libro específico
-        elif "book_id" in st.experimental_get_query_params():
-            # Botón para volver a la lista de libros
-            st.button('Volver', key='volver', on_click=volver,
-                      args=["book_id"])
-            # Muestra el componente de detalles del libro
-            book_detail_component(
-                st.experimental_get_query_params()["book_id"][0])
-            # Botón adicional para volver a la lista de libros
-            st.button('Volver', key='volver2', on_click=volver,
-                      args=["book_id"])
-        else:
-            # Muestra el componente de lista de usuarios
-            list_users_component(lambda page, busqueda: search_users(url, page,
-                                                                     LIMIT,
-                                                                     busqueda))
+    # Comprueba si se está visualizando el perfil de un usuario específico
+    if "user_id" in st.experimental_get_query_params():
+        # Botón para volver a la lista de usuarios
+        st.button('Volver', key='volver', on_click=volver,
+                  args=["user_id"])
+        # Muestra el componente de perfil del usuario
+        profile_component(
+            st.experimental_get_query_params()["user_id"][0])
+        # Botón adicional para volver a la lista de usuarios
+        st.button('Volver', key='volver2', on_click=volver,
+                  args=["user_id"])
+    # Comprueba si se está visualizando los detalles de un libro específico
+    elif "book_id" in st.experimental_get_query_params():
+        # Botón para volver a la lista de libros
+        st.button('Volver', key='volver', on_click=volver,
+                  args=["book_id"])
+        # Muestra el componente de detalles del libro
+        book_detail_component(
+            st.experimental_get_query_params()["book_id"][0])
+        # Botón adicional para volver a la lista de libros
+        st.button('Volver', key='volver2', on_click=volver,
+                  args=["book_id"])
+    else:
+        # Muestra el componente de lista de usuarios
+        list_users_component(lambda page, busqueda: search_users(url, page,
+                                                                 LIMIT,
+                                                                 busqueda))

@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from bson import ObjectId
 from fastapi import APIRouter, Request, Header
@@ -31,7 +32,12 @@ def recomendate_books(request: Request, authentication: str = Header(...)):
                        read=relation["read"])
             g.add_edge(relation["book_id"], relation["user_id"],
                        read=relation["read"])
-    user_books = set(g.successors(user_id))  # Libros que el usuario ha leído
+    try:
+        succesors = g.successors(user_id)
+    except nx.exception.NetworkXError:
+        succesors = []
+    # Libros que el usuario ha leído
+    user_books = set(succesors)
     recommended_books = set()
     other_users = set()
     for successor in user_books:
@@ -43,8 +49,10 @@ def recomendate_books(request: Request, authentication: str = Header(...)):
     # Filtrar libros ya leídos por el usuario
     recommended_books -= user_books
     # Ordenar libros por la cantidad de usuarios que los han leído
-    recommended_books = sorted(recommended_books, key=lambda x: g.in_degree(x),
-                               reverse=True)
+    recommended_books = np.array(sorted(recommended_books,
+                                        key=(lambda x: g.in_degree(x)),
+                                        reverse=True)[:10])
+    np.random.shuffle(recommended_books)
     recommended_books_by_author = list(request.app.database[
         'user_books'].aggregate(
         [
@@ -104,14 +112,20 @@ def recomendate_books(request: Request, authentication: str = Header(...)):
             {
                 '$project': {
                     'points': {
-                        '$sum': [
-                            '$conteo', {
-                                '$multiply': [
-                                    '$conteo', '$book.rating',
-                                    '$book.total_ratings'
+                        '$multiply': [
+                            {
+                                '$sum': [
+                                    '$conteo', {
+                                        '$multiply': [
+                                            '$conteo', '$book.rating',
+                                            '$book.total_ratings'
+                                        ]
+                                    }
                                 ]
-                            }
-                        ]
+                            },
+                            {
+                                '$rand': {}
+                            }]
                     },
                     '_id': '$book._id',
                     'isbn_code': '$book.isbn_code',
@@ -135,7 +149,7 @@ def recomendate_books(request: Request, authentication: str = Header(...)):
         ]))
     return {
         "based_on_others_users": [Book(**g.nodes[recommended]["book"]) for
-                                  recommended in recommended_books[:5]],
+                                  recommended in recommended_books][:5],
         "based_on_author": [Book(**recommended) for recommended in
                             recommended_books_by_author]
     }

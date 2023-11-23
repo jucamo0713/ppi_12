@@ -11,6 +11,16 @@ from components.ProfileComponent import profile_component
 from utils.BasicConfig import basic_config
 from utils.GetUrl import get_url
 
+
+# Función para reiniciar los parámetros de paginación
+def restart_pagination_params():
+    """
+    Función para reiniciar los parámetros de paginación en la sesión de
+    Streamlit.
+    """
+    st.session_state["page"] = 1
+
+
 # Inicialización de UserAgent para generar el User-Agent
 ua = UserAgent()
 

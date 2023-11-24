@@ -202,7 +202,9 @@ def register_component(url: str):
             st.button("Política de Privacidad", use_container_width=True,
                       on_click=(
                           lambda: st.session_state.update(show_privacy=True)))
-
+        st.info("Importante: Para poder registrarte debes de haber leído la "
+                "política de privacidad además de los términos y condiciones "
+                "de nuestra aplicación.")
         # Botón para registrar al usuario
         st.button("Registrarse",
                   disabled=(not (st.session_state.allow_privacy and

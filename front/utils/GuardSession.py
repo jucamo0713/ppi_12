@@ -16,9 +16,9 @@ def guard_session(allow_only_signed=False, allow_only_unsigned=False):
     is_authenticated = "user" in st.session_state
 
     if allow_only_signed and not is_authenticated:
-        st.title("Autenticación es requerida")
+        st.info("Autenticación es requerida")
     elif allow_only_unsigned and is_authenticated:
-        st.title("Ya estás autenticado")
+        st.info("Ya estás autenticado")
 
     return {
         "is_authenticated": is_authenticated,

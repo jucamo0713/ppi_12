@@ -66,7 +66,6 @@ def list_users_component(callback_to_get_data: Callable[[int, str], dict],
             # Muestra la imagen del usuario
             st.image("https://cdn-icons-png.flaticon.com/512/1974/1974050.png",
                      use_column_width=True)
-            st.write(f"**Nombre:** {usuario['name']}")
             st.write(f"**Usuario:** {usuario['user']}")
             # Botón para ver el perfil del usuario
             user_id = usuario["_id"]

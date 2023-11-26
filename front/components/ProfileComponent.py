@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Importaciones de módulos internos de la aplicación
-from components.BookCard import book_card
+from components.ListBooksComponent import list_books_component
 from utils.GetUrl import get_url
 from utils.HttpUtils import HttpUtils
 
@@ -109,6 +109,22 @@ def search_user_data(url: str, user_id: str):
         return None
 
 
+def update_password(url: str,
+                    user_token: str,
+                    new_password: str,
+                    old_password: str):
+    response = HttpUtils.put(f'{url}/user/update-password/',
+                             body={
+                                 "current_password": old_password,
+                                 "new_password": new_password
+                             },
+                             authorization=user_token)
+    if response["success"]:
+        st.session_state["updated_password"] = True
+    else:
+        st.session_state["updated_password"] = False
+
+
 def update_user_data(url: str, user_token: str, new_data: dict):
     """
     Actualiza los datos del usuario.
@@ -167,8 +183,8 @@ def validate_follow_user(url, token, user_to_follow_id: str):
     Args:
         url (str): URL de la API.
         token (str): Token de autenticación del usuario que realiza la acción.
-        user_to_unfollow_id (str): ID del usuario al que se desea dejar de
-        seguir.
+        user_to_follow_id (str): ID del usuario al que se desea validar si
+        ya se sigue
     """
     response = HttpUtils.get(f"{url}/follow/validate-following",
                              authorization=token,
@@ -278,10 +294,35 @@ def profile_component(user_id: str = None):
                     if st.session_state["updated_data"]:
                         st.session_state["updated_data"] = False
                         st.success("¡Datos actualizados con éxito!")
-
+        with (st.expander("Cambiar Contraseña")):
+            password = st.text_input("Ingrese su contraseña actual",
+                                     type="password", )
+            new_password = st.text_input("Ingrese la nueva contraseña",
+                                         type="password", )
+            confirmate_new_password = st.text_input(
+                "Confirme la nueva contraseña",
+                type="password", )
+            if new_password != "" and new_password != confirmate_new_password:
+                st.error("Las contraseñas no coinciden")
+            st.button(
+                "Cambiar contraseña",
+                disabled=not (password != "" and
+                              new_password != "" and
+                              confirmate_new_password != "" and
+                              new_password == confirmate_new_password
+                              ),
+                on_click=update_password,
+                args=(
+                    url,
+                    st.session_state.token,
+                    new_password, password)
+            )
+            if (("updated_password" in st.session_state) and
+                    st.session_state.get("updated_password")):
+                st.success("Contraseña actualizada con éxito")
         # Botón para cerrar sesión
         st.button("Cerrar Sesión", on_click=close_session)
-
+    st.markdown("---")
     # Título indicando que se mostrarán los libros del usuario
     st.title("Mis Libros")
 
@@ -298,47 +339,43 @@ def profile_component(user_id: str = None):
 
     # Mostrar los libros leídos en la pestaña "Leídos"
     with read:
-        # Obtener la lista de libros leídos del usuario
-        read_books = search_user_books(url, "read", 5, 1,
-                                       token, user_id)["data"]
-
-        # Crear columnas para mostrar los libros leídos en formato de tarjetas
-        read_columns = st.columns(5)
-        for index, data in enumerate(read_books):
-            with read_columns[index]:
-                # Mostrar la tarjeta del libro utilizando la función book_card
-                book_card(data, "read")
+        list_books_component(
+            lambda page, search:
+            search_user_books(url,
+                              "read",
+                              5,
+                              page,
+                              token,
+                              user_id,
+                              search),
+            "read-list")
 
     # Mostrar los libros en proceso de lectura en la pestaña "En Proceso de
     # Lectura"
     with reading:
-        # Obtener la lista de libros en proceso de lectura del usuario
-        reading_books = \
-            search_user_books(url, "reading", 5, 1, token,
-                              user_id)["data"]
-
-        # Crear columnas para mostrar los libros en proceso de lectura en
-        # formato de tarjetas
-        reading_columns = st.columns(5)
-        for index, data in enumerate(reading_books):
-            with reading_columns[index]:
-                # Mostrar la tarjeta del libro utilizando la función book_card
-                book_card(data, "reading")
+        list_books_component(
+            lambda page, search:
+            search_user_books(url,
+                              "reading",
+                              5,
+                              page,
+                              token,
+                              user_id,
+                              search),
+            "reading-list")
 
     # Mostrar los libros favoritos en la pestaña "Favoritos"
     with favorite:
-        # Obtener la lista de libros favoritos del usuario
-        favorite_books = \
-            search_user_books(url, "favorite", 5, 1, token,
-                              user_id)["data"]
-
-        # Crear columnas para mostrar los libros favoritos en formato de
-        # tarjetas
-        favorite_columns = st.columns(5)
-        for index, data in enumerate(favorite_books):
-            with favorite_columns[index]:
-                # Mostrar la tarjeta del libro utilizando la función book_card
-                book_card(data, "favorites")
+        list_books_component(
+            lambda page, search:
+            search_user_books(url,
+                              "favorite",
+                              5,
+                              page,
+                              token,
+                              user_id,
+                              search),
+            "favorite")
 
     # Estadísticos de lectura
     st.title("Mis estadísticos de lectura")

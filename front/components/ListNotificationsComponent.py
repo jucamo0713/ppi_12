@@ -43,9 +43,9 @@ def delete_notification(url: str, id: str, authorization: str) -> bool:
     Returns:
     - bool: True si la eliminación fue exitosa, False en caso contrario.
     """
-    response = HttpUtils.delete(
-        url, authorization=authorization, query={"id": id}
-    )
+    response = HttpUtils.delete(f"{url}/notifications/delete",
+                                authorization=authorization,
+                                query={"id": id})
     return response['success']
 
 
@@ -96,10 +96,14 @@ def list_notification_component(key: str = "notifications") -> None:
                 )
     # Paginación
     if 'total_pages' in metadata and metadata['total_pages'] > 1:
+        # Muestra información de paginación que indica la página actual y el
+        # total de páginas.
         st.write(
             f"Mostrando página {st.session_state[f'{key}-page']} de "
             f"{int(metadata['total_pages'])}"
         )
+        # Proporciona un campo numérico para que los usuarios ingresen el
+        # número de página.
         st.number_input(
             "page", key=f"{key}-page", label_visibility='hidden',
             step=1, min_value=1, max_value=int(metadata['total_pages'])
@@ -108,4 +112,6 @@ def list_notification_component(key: str = "notifications") -> None:
 
     # Mensaje si no hay resultados
     if not notifications or len(notifications) < 1:
+        # Si no se encontraron Notificaciones que coincidan con la búsqueda,
+        # muestra un mensaje informativo.
         st.info("No se encuentran notificaciones.")

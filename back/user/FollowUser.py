@@ -77,10 +77,10 @@ def follow_user(request: Request, follow_id: str,
         data.append({
             "message": f"El usuario {token_data['user']} a quien sigues "
                        f"empezó a seguir a alguien mas.",
-            "user_id": follower['_id'],
+            "user_id": follower.id,
             "type": "NEW_FOLLOW_OF_FOLLOWER",
             "created_at": datetime.now(),
-            "data_id": ObjectId(user_id),
+            "data_id": ObjectId(follow_id),
         })
     request.app.database['notifications'].insert_many(data)
     # Convierte la respuesta en un objeto Follow y lo devuelve

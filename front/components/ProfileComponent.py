@@ -209,11 +209,6 @@ def profile_component(user_id: str = None):
     my_profile = not (user_id is not None and ("user" not in st.session_state
                                                or user_id !=
                                                st.session_state.user["id"]))
-    data = search_notifications(url, 15, 1, st.session_state.token)
-    notifications = data['data']
-    if len(notifications) >= 1:
-        st.info("Tienes nuevas notificaciones, dirigete a la pestaña "
-                "Notificaciones si deseas verlas.")
 
     # Verifica si el perfil es propio o de otro usuario
     if not my_profile:
@@ -249,6 +244,11 @@ def profile_component(user_id: str = None):
 
         # Muestra un mensaje de bienvenida y los detalles del usuario
         st.title(f"Bienvenido, {name}!")
+        data = search_notifications(url, 15, 1, st.session_state.token)
+        notifications = data['data']
+        if len(notifications) >= 1:
+            st.info("Tienes nuevas notificaciones, dirigete a la pestaña "
+                    "Notificaciones si deseas verlas.")
         data = {
             "Nombre": name,
             "Usuario": usuario["user"],

@@ -6,7 +6,8 @@ from utils.HttpUtils import HttpUtils
 LIMIT = 15
 
 
-def search_notifications(url: str, limit: int, page: int, authorization: str) -> dict:
+def search_notifications(url: str, limit: int, page: int,
+                         authorization: str) -> dict:
     """
     Busca notificaciones en la URL proporcionada.
 
@@ -67,7 +68,8 @@ def resolve_button(notification: dict) -> None:
                     user_id=x
                 )
             ),
-            args=[notification["data_id"]]
+            args=[notification["data_id"]],
+            key=f"Show_user{notification['_id']}"
         )
 
 
@@ -90,7 +92,7 @@ def list_notification_component(key: str = "notifications") -> None:
                 resolve_button(notification)
             with cols[1]:
                 st.button(
-                    "Borrar",
+                    "Borrar", key=f"Borrar-{notification['_id']}",
                     on_click=delete_notification,
                     args=[url, notification["_id"], st.session_state.token]
                 )

@@ -61,7 +61,7 @@ def generate_statistics(request: Request,
         data = pd.DataFrame(user_books)
 
         # Obtener los 5 principales autores más leídos
-        top_authors = data['book'].apply(lambda x: x[
+        top_authors = data[data['read'] >= 1]['book'].apply(lambda x: x[
             'author']).value_counts().head(5)
 
         # Filtrar los libros leídos, en progreso y favoritos

@@ -25,7 +25,7 @@ def search_notifications(url: str, limit: int, page: int, authorization: str):
 
 
 def delete_notification(url: str, id: str, authorization: str):
-    response = HttpUtils.delete(url,
+    response = HttpUtils.delete(f"{url}/notifications/delete",
                                 authorization=authorization,
                                 query={"id": id})
     if response['success']:

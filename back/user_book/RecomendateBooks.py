@@ -75,19 +75,106 @@ def recomendate_books(request: Request, authentication: str = Header(...)):
                                         key=(lambda x: g.in_degree(x)),
                                         reverse=True)[:10])
     np.random.shuffle(recommended_books)
-
+    print(g.nodes[recommended_books[0]]["book"])
     # Obtener libros recomendados basados en otros usuarios
     recommended_books_based_on_others = [Book(**g.nodes[recommended]["book"])
                                          for
                                          recommended in recommended_books][:5]
-
     # Obtener libros recomendados basados en el autor de los libros leídos
     # por el usuario
     recommended_books_by_author = list(request.app.database[
         'user_books'].aggregate(
         [
-            # ... (Consulta para obtener libros recomendados basados en el
-            # autor)
+            {
+                '$match': {
+                    'user_id': ObjectId(user_id)
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'books',
+                    'localField': 'book_id',
+                    'foreignField': '_id',
+                    'as': 'book'
+                }
+            },
+            {
+                '$unwind': {
+                    'path': '$book'
+                }
+            },
+            {
+                '$group': {
+                    '_id': '$book.author',
+                    'conteo': {
+                        '$sum': 1
+                    },
+                    'books': {
+                        '$push': '$book_id'
+                    }
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'books',
+                    'localField': '_id',
+                    'foreignField': 'author',
+                    'as': 'book'
+                }
+            },
+            {
+                '$unwind': {
+                    'path': '$book'
+                }
+            },
+            {
+                '$match': {
+                    '$expr': {
+                        '$not': {
+                            '$in': [
+                                '$book._id', '$books'
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                '$project': {
+                    'points': {
+                        '$multiply': [
+                            {
+                                '$sum': [
+                                    '$conteo', {
+                                        '$multiply': [
+                                            '$conteo', '$book.rating',
+                                            '$book.total_ratings'
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                '$rand': {}
+                            }]
+                    },
+                    '_id': '$book._id',
+                    'isbn_code': '$book.isbn_code',
+                    'title': '$book.title',
+                    'author': '$book.author',
+                    'image': '$book.image',
+                    'rating': '$book.rating',
+                    'total_ratings': '$book.total_ratings'
+                }
+            },
+            {
+                '$sort': {
+                    'points': -1,
+                    'rating': -1,
+                    'total_ratings': -1
+                }
+            },
+            {
+                '$limit': 5
+            }
         ]))
 
     return {

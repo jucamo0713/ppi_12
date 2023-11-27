@@ -1,5 +1,4 @@
 # Importaciones de librerías estándar de Python
-import textwrap
 from typing import Callable
 
 # Importaciones de librerías de terceros

@@ -41,7 +41,11 @@ def restart_pagination_params():
 
 
 # Función para buscar usuarios en la aplicación
-def search_users(url: str, page: int, limit: int, busqueda: str = '') -> dict:
+def search_users(url: str,
+                 page: int,
+                 limit: int,
+                 busqueda: str = '',
+                 authentication: str = None) -> dict:
     """
     Busca usuarios en la aplicación según un término de búsqueda.
 
@@ -58,7 +62,7 @@ def search_users(url: str, page: int, limit: int, busqueda: str = '') -> dict:
         'search_param': busqueda,
         'limit': limit,
         'page': page
-    })
+    }, authorization=authentication)
     if response['success']:
         return response['data']
 
@@ -91,6 +95,11 @@ if value:
                   args=["book_id"])
     else:
         # Muestra el componente de lista de usuarios
-        list_users_component(lambda page, busqueda: search_users(url, page,
-                                                                 LIMIT,
-                                                                 busqueda))
+        list_users_component(
+            lambda page, busqueda: search_users(url,
+                                                page,
+                                                LIMIT,
+                                                busqueda,
+                                                st.session_state.get(
+                                                    'token',
+                                                    None)))

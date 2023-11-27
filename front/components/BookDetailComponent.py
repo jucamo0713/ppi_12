@@ -5,6 +5,7 @@ from math import floor
 # Importaciones de librerías de terceros
 import streamlit as st
 
+from components.CommentsComponent import comments_component
 # Importaciones de módulos internos de la aplicación
 from utils.GetUrl import get_url
 from utils.GuardSession import guard_session
@@ -265,91 +266,9 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
                                   book_id)
     comentarios_raiz = response['data']
     for i, comment in enumerate(comentarios_raiz):
-        fecha = datetime.fromisoformat(comment['created_date']).strftime(
-            '%Y-%m-%d %H:%M')
-        with ((st.expander(f"**{comment['username']}** - *{fecha}*"))):
-            user_id = comment['user_id']
-            comment_id = comment['_id']
-            st.button("Ver Perfil",
-                      key=f'Ver Perfil${comment_id}',
-                      on_click=(lambda x: st.experimental_set_query_params(
-                          **st.experimental_get_query_params(),
-                          user_id=x)),
-                      args=[user_id])
-            st.write(comment['content'])
-            if comment['has_responses']:
-                if f'limit_{comment_id}_comments' not in st.session_state:
-                    st.session_state[
-                        f'limit_{comment_id}_comments'] = (
-                        DEFAULT_COMMENTS_LIMIT)
-                sub_response = buscar_comentarios(
-                    url,
-                    limit=st.session_state[f'limit_'
-                                           f'{comment_id}_comments'],
-                    reply_to=comment_id, book_id=book_id)
-                comment_responses = sub_response['data']
-                for res in comment_responses:
-                    fecha_res = datetime.fromisoformat(
-                        res['created_date']).strftime(
-                        '%Y-%m-%d %H:%M')
-                    st.markdown(f"- **{res['username']}** - *{fecha_res}*:"
-                                f" {res['content']}")
-                    st.button("Ver Perfil",
-                              key=f'Ver Perfil${res["_id"]}',
-                              on_click=(
-                                  lambda x: st.experimental_set_query_params(
-                                      **st.experimental_get_query_params(),
-                                      user_id=x)),
-                              args=[res["user_id"]])
-                menos, mas = st.columns(2)
-                with menos:
-                    if (st.session_state[f'limit_{comment_id}_comments']
-                            > DEFAULT_COMMENTS_LIMIT):
-                        st.button("Ver menos",
-                                  on_click=increment_comments_limit,
-                                  use_container_width=True,
-                                  args=[-DEFAULT_COMMENTS_LIMIT, comment_id])
-                with mas:
-                    if sub_response['metadata']['total_pages'] > 1:
-                        st.button("Ver mas",
-                                  on_click=increment_comments_limit,
-                                  use_container_width=True,
-                                  args=[DEFAULT_COMMENTS_LIMIT, comment[
-                                      "_id"]]
-                                  )
-                # Agregar botón de respuesta para cada comentario raíz
-            if data["is_authenticated"]:
-                if f'respond_area_{comment_id}' not in st.session_state:
-                    st.session_state[f'respond_area_{comment_id}'] = ''
-                st.text_area(f"Responder a {comment['username']}",
-                             key=f'respond_area_{comment_id}',
-                             value=st.session_state[f'respond_area_'
-                                                    f'{comment_id}'])
-                st.button(
-                    "Responder",
-                    key=f'comment_button_{comment_id}',
-                    on_click=crear_comentario,
-                    disabled=(f'respond_area_{comment_id}' not in
-                              st.session_state or
-                              st.session_state[
-                                  f'respond_area_{comment_id}'] == ''),
-                    args=[
-                        url,
-                        data['token'],
-                        book_id,
-                        st.session_state[f'respond_area_{comment_id}'],
-                        comment_id
-                    ])
-                if f'{comment_id}_comment_error' in st.session_state:
-                    st.warning(st.session_state[
-                                   f'{comment_id}_comment_error'])
-                    del st.session_state[
-                        f'{comment_id}_comment_error']
-                if f'{comment_id}_comment_success' in st.session_state:
-                    st.success(st.session_state[
-                                   f'{comment_id}_comment_success'])
-                    del st.session_state[
-                        f'{comment_id}_comment_success']
+        with ((st.expander(f"**{comment['username']}**"))):
+            comments_component(comment, data['is_authenticated'],
+                               data['token'])
     menos, mas = st.columns(2)
     with menos:
         if st.session_state.limit_main_comments > DEFAULT_COMMENTS_LIMIT:

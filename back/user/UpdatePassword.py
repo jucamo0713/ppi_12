@@ -1,4 +1,3 @@
-# Importar librerías necesarias
 import hashlib
 
 from bson import ObjectId
@@ -50,9 +49,11 @@ def update_password(request: Request, data: UpdatePasswordRequest,
     user_id = token_data['id']
 
     # Busca al usuario en la base de datos
-    user = request.app.database['users'].find_one({
-        "_id": ObjectId(user_id)
-    })
+    user = request.app.database['users'].find_one(
+        {
+            "_id": ObjectId(user_id)
+        }
+    )
 
     # Hash de la contraseña actual
     hashed_password = hashlib.sha256((data.current_password + config[
@@ -68,7 +69,10 @@ def update_password(request: Request, data: UpdatePasswordRequest,
         "HASHING_SALT"]).encode()).hexdigest()
     request.app.database['users'].find_one_and_update({
         "_id": ObjectId(user_id)
-    }, {"$set": {"password": new_hashed_password}})
-
+    }, {
+        "$set": {
+            "password": new_hashed_password
+        }
+    })
     # Devuelve un diccionario indicando el éxito de la operación
     return {"success": True}

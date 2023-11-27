@@ -7,6 +7,7 @@ from auth.AuthRoutes import AuthRoutes
 from comments.BookCommentsRoutes import BOOK_COMMENTS_ROUTES
 from datasets.DatasetsRoutes import DATASETS_ROUTES
 from db.Connection import Connection
+from notifications.NotificationsRoutes import NOTIFICATIONS_ROUTES
 from user.UserRoutes import USER_ROUTES
 from user_book.UserBookRoutes import USER_BOOK_ROUTES
 
@@ -39,7 +40,8 @@ routers = [*BookRoutes,
            *USER_ROUTES,
            *USER_BOOK_ROUTES,
            *BOOK_COMMENTS_ROUTES,
-           *DATASETS_ROUTES]
+           *DATASETS_ROUTES,
+           *NOTIFICATIONS_ROUTES]
 
 # Agregar las rutas y controladores a la aplicación
 for router in routers:

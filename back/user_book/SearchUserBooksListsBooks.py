@@ -89,7 +89,8 @@ def list_user_books(request: Request,
                     'isbn_code': '$book.isbn_code',
                     'title': '$book.title',
                     'author': '$book.author',
-                    'image': '$book.image'
+                    'image': '$book.image',
+                    'rating': '$book.rating',
                 }
             }
         ]

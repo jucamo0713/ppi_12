@@ -145,8 +145,23 @@ class HttpUtils:
             return {"success": False}
 
     @classmethod
-    def delete(cls):
+    def delete(cls, url: str, body: dict = None, headers: dict = None,
+               query: dict = None, authorization: str = None):
         """
         Realiza una solicitud HTTP DELETE (por implementar).
         """
-        pass
+        data = {}
+        if body is not None:
+            data['json'] = body
+        data["headers"] = cls.generate_default_headers()
+        if headers is not None:
+            data["headers"] = {**data["headers"], **headers}
+        if authorization is not None:
+            data["headers"]['authentication'] = f'Bearer {authorization}'
+        if query is not None:
+            data["params"] = query
+        response = requests.delete(url, **data)
+        if cls.resolve_exceptions(response):
+            return {"success": True, "data": response.json()}
+        else:
+            return {"success": False}

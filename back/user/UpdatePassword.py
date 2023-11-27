@@ -24,9 +24,11 @@ def update_users(request: Request, data: UpdatePasswordRequest,
     # Valida el token de autenticación
     token_data = validate_token(authentication)
     user_id = token_data['id']
-    user = request.app.database['users'].find_one({
-        "_id": ObjectId(user_id)
-    })
+    user = request.app.database['users'].find_one(
+        {
+            "_id": ObjectId(user_id)
+        }
+    )
 
     hashed_password = hashlib.sha256((data.current_password + config[
         "HASHING_SALT"]).encode()).hexdigest()
@@ -39,5 +41,9 @@ def update_users(request: Request, data: UpdatePasswordRequest,
         "HASHING_SALT"]).encode()).hexdigest()
     request.app.database['users'].find_one_and_update({
         "_id": ObjectId(user_id)
-    }, {"$set": {"password": new_hashed_password}})
+    }, {
+        "$set": {
+            "password": new_hashed_password
+        }
+    })
     return {"success": True}

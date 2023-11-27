@@ -2,6 +2,7 @@
 import streamlit as st
 
 from components.BookDetailComponent import book_detail_component
+from components.ListNotificationsComponent import list_notification_component
 from components.ListUsersComponent import list_users_component
 # Importaciones de módulos internos de la aplicación
 from components.ProfileComponent import profile_component
@@ -112,7 +113,10 @@ if value:
             st.button('Volver', key='volver2', on_click=volver,
                       args=["book_id"])
         else:
-            tabs = st.tabs(["Perfil", "Seguidores", "Siguiendo"])
+            tabs = st.tabs(["Perfil",
+                            "Seguidores",
+                            "Siguiendo",
+                            "Notificaciones"])
             with tabs[0]:
                 # Muestra el componente del perfil del usuario
                 profile_component()
@@ -123,8 +127,11 @@ if value:
                                                   y), "Seguidores")
             with tabs[2]:
                 list_users_component(
-                    lambda x, y: search_following(url, x,
+                    lambda x, y: search_following(url,
+                                                  x,
                                                   LIMIT,
                                                   data['token'],
                                                   y),
                     "Seguido")
+            with tabs[3]:
+                list_notification_component()

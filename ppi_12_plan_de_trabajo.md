@@ -70,4 +70,4 @@
 
 | Tarea         | Descripción                                          | Responsable                                                                                                  | Estado      |  
 |---------------|------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|-------------|
-| Correcciones. | Ajustes definitivos para presentar la entrega final. | [Juan Camilo Montoya](https://github.com/jucamo0713) e [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Sin Empezar |
+| Correcciones. | Ajustes definitivos para presentar la entrega final. | [Juan Camilo Montoya](https://github.com/jucamo0713) e [Hinara Pastora Sánchez](https://github.com/HinaraSM) | Listo |

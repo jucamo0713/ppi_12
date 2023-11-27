@@ -6,7 +6,6 @@ from components.ListUsersComponent import list_users_component
 from components.ProfileComponent import profile_component
 from utils.BasicConfig import basic_config
 from utils.GetUrl import get_url
-from utils.GuardSession import guard_session
 from utils.HttpUtils import HttpUtils
 from components.BookDetailComponent import book_detail_component
 

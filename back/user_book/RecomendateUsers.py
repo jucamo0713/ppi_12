@@ -15,7 +15,8 @@ RECOMENDATE_USERS = APIRouter()
 def recomendate_users(request: Request,
                       authentication: str = Header(None)):
     """
-    Endpoint para recomendar usuarios basados en libros leídos por el usuario autenticado.
+    Endpoint para recomendar usuarios basados en libros leídos por el
+    usuario autenticado.
 
     Args:
         request (Request): Objeto Request de FastAPI.

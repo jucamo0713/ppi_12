@@ -6,6 +6,7 @@ from user.SearchFollowers import SEARCH_FOLLOWERS
 from user.SearchFollowing import SEARCH_FOLLOWING
 from user.SearchUserById import SEARCH_USER_BY_ID
 from user.UnfollowUser import UNFOLLOW_USER
+from user.UpdatePassword import UPDATE_PASSWORD
 from user.UpdateUsers import UPDATE_USERS
 from user.ValidateFollow import VALIDATE_IF_FOLLOWING
 
@@ -37,4 +38,8 @@ USER_ROUTES = [{'path': '/user',
                {'path': '/follow',
                 'tag': 'Follow',
                 'instance': SEARCH_FOLLOWING},
+               {'path': '/user',
+                'tag': 'User',
+                'instance': UPDATE_PASSWORD
+                }
                ]

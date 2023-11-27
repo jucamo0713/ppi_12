@@ -1,4 +1,5 @@
 # Importaciones de la biblioteca estándar
+import textwrap
 from io import BytesIO
 
 # Importaciones de bibliotecas relacionadas con terceros
@@ -85,17 +86,13 @@ def book_card(book, key: str = None):
     # Muestra la imagen de la portada del libro
     st.image(image,
              use_column_width=True, )
-
-    if len(book["title"]) > MAX_SIZE_TEXT:
-        # Trunca el título si es demasiado largo
-        book["title"] = book["title"][:MAX_SIZE_TEXT - 3] + "..."
-    if len(book["author"]) > MAX_SIZE_TEXT:
-        # Trunca el autor si es demasiado largo
-        book["author"] = book["author"][:MAX_SIZE_TEXT - 3] + "..."
-
+    stars = "★" * round(book['rating']) + "☆" * (5 - round(book['rating']))
     # Muestra el título y el autor del libro
-    st.write("**Título:**", book["title"])
-    st.write("**Autor:**", book["author"])
+    st.write("**Título:**", textwrap.shorten(book["title"], MAX_SIZE_TEXT))
+    st.write("**Autor:**", textwrap.shorten(book["title"], MAX_SIZE_TEXT))
+    st.write("**Calificación:**",
+             textwrap.shorten(
+                 f"{stars} ({round(book['rating'], 2)}/5.0)", MAX_SIZE_TEXT))
 
     # Botón de "Detalle" que muestra el detalle del libro
     st.button('Detalle',

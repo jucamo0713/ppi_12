@@ -1,5 +1,6 @@
 # Importaciones de librerías Nativas
 from datetime import datetime
+from math import floor
 
 # Importaciones de librerías de terceros
 import streamlit as st
@@ -184,11 +185,12 @@ def book_detail_component(book_id: str, book: dict = None, url: str = None):
         book = buscar_libro_por_id(book_id, url)
     st.title(book['title'])
     st.image(book['image'])
+    stars = "★" * round(book['rating']) + "☆" * (5 - round(book['rating']))
     data = {"Código ISBN": book['isbn_code'],
             "Titulo": book['title'],
             "Autor": book['author'],
             "Portada": book['image'],
-            "Calificación": round(book['rating'], 2),
+            "Calificación": f"{stars} {round(book['rating'], 2)}",
             "Total Calificaciones": book['total_ratings'], }
     st.table(data)
     st.markdown("---")

@@ -6,10 +6,12 @@ from fake_useragent import UserAgent
 # Importaciones de módulos internos de la aplicación
 from components.BookCard import book_card
 from components.BookDetailComponent import book_detail_component
+from components.ListBooksComponent import list_books_component
 from components.ListUsersComponent import restart_pagination_params
 from components.ProfileComponent import profile_component
 from utils.BasicConfig import basic_config
 from utils.GetUrl import get_url
+from utils.HttpUtils import HttpUtils
 
 
 # Función para reiniciar los parámetros de paginación
@@ -32,6 +34,21 @@ value = basic_config(url=url)
 
 # Número máximo de libros a mostrar por página
 LIMIT = 15
+
+
+def search_all_books(url: str, page: int, limit: int, busqueda: str = ""):
+    service_response = HttpUtils.get(f"{url}/books", query={
+        'search_param': busqueda,
+        'limit': limit,
+        'page': page
+    })
+    if service_response['success']:
+        return service_response["data"]
+    else:
+        return {
+            "data": [],
+            "metadata": {}
+        }
 
 
 # Función para volver a la lista de libros
@@ -70,78 +87,13 @@ if value:
 
     else:
         # Si 'book_id' no está en la URL, muestra la lista de libros.
-        # Inicializar el estado de la sesión para el paginado
-        if 'page' not in st.session_state:
-            # Si 'page' no está definido en el estado de sesión,
-            # inicialízalo con 1.
-            st.session_state.page = 1
-
         # Título de la página
         st.header("Explora y descubre nuevos autores y libros")
-
-        # Muestra una barra de búsqueda para que los usuarios ingresen
-        # términos de búsqueda.
-        # Cuando cambia el valor en la barra de búsqueda, se llama a la
-        # función 'restart_pagination_params'.
-        busqueda = st.text_input("Buscar libro",
-                                 on_change=lambda: restart_pagination_params())
-
-        # Realiza una solicitud HTTP GET a la API para obtener una lista de
-        # libros.
-        # Los parámetros incluyen el término de búsqueda, el límite de
-        # resultados y la página actual.
-        # La respuesta se almacena en 'response'.
-        response = requests.get(f"{url}/books", {
-            'search_param': busqueda,
-            'limit': LIMIT,
-            'page': st.session_state.page
-        }).json()
-
-        # Extrae la lista de libros de la respuesta.
-        libros = response['data']
-        # Extrae los metadatos de la respuesta.
-        metadata = response['metadata']
-
-        # Divide la página en 5 columnas para mostrar los libros.
-        columnas = st.columns(5)
-
-        # Mapeo de todos los libros
-        for i, resultado in enumerate(libros):
-            # Recorre todos los libros y sus detalles.
-
-            # Se coloca un separador cada vez que termine una fila
-            if i != 0 and i % 5 == 0:
-                # Agrega un separador horizontal (línea) después de cada
-                # fila de 5 libros.
-                st.markdown("---")
-                # Crea un nuevo contenedor de 5 columnas para los libros
-                # para mantener una estructura uniforme
-                columnas = st.columns(5)
-
-            # Alterna entre las 5 columnas para mostrar los libros en cada
-            # columna.
-            with ((columnas[i % 5])):
-                # Llama al componente 'book_card' para mostrar los detalles
-                # del libro.
-                book_card(resultado)
-
-        # Paginación
-        if metadata['total_pages'] > 1:
-            # Muestra información de paginación que indica la página actual
-            # y el total de páginas.
-            st.write(
-                f"Mostrando página {st.session_state.page} de "
-                f"{int(metadata['total_pages'])}")
-            # Proporciona un campo numérico para que los usuarios ingresen
-            # el número de página.
-            st.number_input("page", key="page", label_visibility='hidden',
-                            step=1, min_value=1,
-                            max_value=int(metadata['total_pages']))
-
-        st.markdown("---")
-
-        # Mensaje si no hay resultados
-        if not libros or len(libros) < 1:
-            # Si no se encontraron libros que coincidan con la búsqueda,
-            # muestra un mensaje informativo.
-            st.info("No se encontraron resultados para la búsqueda.")
+        # Listado
+        list_books_component(
+            lambda page, search:
+            search_all_books(url,
+                             page,
+                             LIMIT,
+                             search),
+            "general")

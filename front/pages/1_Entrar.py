@@ -92,7 +92,7 @@ if not is_authenticated:
             st.session_state.token = token
             is_authenticated = True
             # Reinicia la aplicación para mostrar la página autenticada
-            st.experimental_rerun()
+            st.rerun()
 else:
     # Muestra un mensaje si el usuario ya está autenticado
     st.success("Ya has iniciado sesión")

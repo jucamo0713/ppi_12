@@ -1,3 +1,4 @@
+# Importaciones de librerías necesarias
 from bson import ObjectId
 from fastapi import APIRouter, Request, Header
 
